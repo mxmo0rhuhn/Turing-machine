@@ -1,6 +1,7 @@
 package ch.zhaw.turing.logic;
 
 /**
+ * Ist das Überhaupt notwendig?
  *
  * @author Max Schrimpf
  */
