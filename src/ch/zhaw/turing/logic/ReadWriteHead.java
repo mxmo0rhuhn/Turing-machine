@@ -8,17 +8,17 @@ import java.util.Stack;
  * 
  * @author Max Schrimpf
  */
-public class ReadWriteHead extends Observable{
+public class ReadWriteHead extends Observable {
 
     // Richtig wären Grossbuchstaben L,R,S ... der Übersicht zuliebe anders.
     public static String LEFT = "left";
     public static String RIGHT = "right";
     public static String STAY = "stay";
-    
+
     private final Stack<Character> prefix = new Stack<Character>();
     private final Stack<Character> suffix = new Stack<Character>();
 
-    private String lastDirection; 
+    private String lastDirection;
     private Character curChar;
 
     /**
@@ -34,7 +34,7 @@ public class ReadWriteHead extends Observable{
     public void stay() {
         lastDirection = ReadWriteHead.STAY;
     }
-    
+
     public void moveRight() {
         prefix.push(curChar);
         curChar = suffix.pop();
@@ -45,7 +45,7 @@ public class ReadWriteHead extends Observable{
         if (curChar == 'B' && suffix.size() == 0) {
             suffix.push('B');
         }
-         
+
         lastDirection = ReadWriteHead.RIGHT;
         sendNotification();
     }
@@ -65,24 +65,28 @@ public class ReadWriteHead extends Observable{
         sendNotification();
     }
 
-    private void sendNotification()
-    {
-        setChanged();
-        notifyObservers();
-        
-    }
-    
     public Character read() {
         return curChar;
     }
 
-    public void write(Character curCharacter) {
-        this.curChar = curCharacter;
+    public void write(Character newCharacter) {
+
+        // Damit das Band nicht unendlich wird, werden blanks nur geschrieben
+        // wenn wirklich nötig...
+        if (newCharacter == 'B') {
+            if (prefix.size() > 1 && prefix.peek() == 'B') {
+                prefix.pop();
+            }
+            if (suffix.size() > 1 && suffix.peek() == 'B') {
+                suffix.pop();
+            }
+        }
+        this.curChar = newCharacter;
     }
 
     /**
      * Gibt den Wert des Feldes prefix zurück
-     *
+     * 
      * @return Der Wert von prefix
      */
     public Stack<Character> getPrefix() {
@@ -91,7 +95,7 @@ public class ReadWriteHead extends Observable{
 
     /**
      * Gibt den Wert des Feldes suffix zurück
-     *
+     * 
      * @return Der Wert von suffix
      */
     public Stack<Character> getSuffix() {
@@ -100,10 +104,15 @@ public class ReadWriteHead extends Observable{
 
     /**
      * Gibt den Wert des Feldes lastDirection zurück
-     *
+     * 
      * @return Der Wert von lastDirection
      */
     public String getLastDirection() {
         return lastDirection;
+    }
+
+    private void sendNotification() {
+        setChanged();
+        notifyObservers();
     }
 }

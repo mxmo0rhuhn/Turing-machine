@@ -1,22 +1,25 @@
 package ch.zhaw.turing.logic;
 
-public class MultiplicationStateControl {
+import java.util.Observable;
 
-    // Hier werden alle Zustände, die es gibt erfasst.
-    public static final String q0 = "q0";
-    public static final String q1 = "q1";
-    public static final String q2 = "q2";
-    public static final String q3 = "q3";
-    public static final String q4 = "q4";
-    public static final String q5 = "q5";
-    public static final String q6 = "q6";
-    public static final String q7 = "q7";
-    public static final String q8 = "q8";
-    public static final String q9 = "q9";
-    public static final String q10 = "q10";
+public class MultiplicationStateControl extends Observable {
+
+    public static final String Q0 = "Q0";
+    public static final String Q1 = "Q1";
+    public static final String Q2 = "Q2";
+    public static final String Q3 = "Q3";
+    public static final String Q4 = "Q4";
+    public static final String Q5 = "Q5";
+    public static final String Q6 = "Q6";
+    public static final String Q7 = "Q7";
+    public static final String Q8 = "Q8";
+    public static final String Q9 = "Q9";
+    public static final String Q10 = "Q10";
 
     private TwoTapeConfiguration curConfiguration;
+    
     private String curState;
+    
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
 
@@ -37,7 +40,7 @@ public class MultiplicationStateControl {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
-        curState = MultiplicationStateControl.q0;
+        curState = MultiplicationStateControl.Q0;
         curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
     }
 
@@ -89,7 +92,7 @@ public class MultiplicationStateControl {
         this.secondRSH = new ReadWriteHead();
 
         setUpTape(multiplikator, multiplikant);
-        curState = MultiplicationStateControl.q0;
+        curState = MultiplicationStateControl.Q0;
         curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
     }
 
@@ -99,37 +102,11 @@ public class MultiplicationStateControl {
      * multiplizierten Zahl.
      */
     public void doAllSteps() {
-        while (curConfiguration.getCurState() != MultiplicationStateControl.q10) {
+        while (curConfiguration.getCurState() != MultiplicationStateControl.Q10) {
             doStep();
         }
 
         System.out.println("Ergebnis: " + getFirstNumberAsInteger());
-    }
-
-    /**
-     * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale.
-     * Der Lese-Schreibkopf des ersten Bandes steht nach dieser Operation hinter
-     * der letzten Ziffer der Zahl.
-     * 
-     * @return das Ergebnis der Rechnung als Decimalzahl.
-     */
-    public int getFirstNumberAsInteger() {
-        int i = 0;
-
-        firstRSH.moveLeft();
-
-        while (firstRSH.read() != 'B') {
-            firstRSH.moveLeft();
-        }
-
-        firstRSH.moveRight();
-
-        while (firstRSH.read() == '0') {
-            firstRSH.moveRight();
-            i++;
-        }
-
-        return i;
     }
 
     public void doStep() {
@@ -138,28 +115,34 @@ public class MultiplicationStateControl {
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
 
-        if (curConfiguration.getCurState().equals(MultiplicationStateControl.q0)) {
+        if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q0)) {
             handleQ0();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q1)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q1)) {
             handleQ1();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q2)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q2)) {
             handleQ2();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q3)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q3)) {
             handleQ3();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q4)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q4)) {
             handleQ4();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q5)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q5)) {
             handleQ5();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q6)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q6)) {
             handleQ6();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q7)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q7)) {
             handleQ7();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q8)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q8)) {
             handleQ8();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q9)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q9)) {
             handleQ9();
-        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.q10)) {
+        } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q10)) {
             handleQ10();
+        }
+        
+        if(!curState.equals(curConfiguration.getCurState()))
+        {
+            setChanged();
+            notifyObservers();
         }
 
         curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
@@ -182,17 +165,17 @@ public class MultiplicationStateControl {
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q9;
+            curState = MultiplicationStateControl.Q9;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q9;
+            curState = MultiplicationStateControl.Q9;
         } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
             secondRSH.moveRight();
 
-            curState = MultiplicationStateControl.q7;
+            curState = MultiplicationStateControl.Q7;
         } else {
             dumpTape1Exeption();
         }
@@ -214,13 +197,13 @@ public class MultiplicationStateControl {
             secondRSH.write('B');
             secondRSH.moveLeft();
 
-            curState = MultiplicationStateControl.q8;
+            curState = MultiplicationStateControl.Q8;
         } else if (curConfiguration.getSecondTapeCharacter() == 'B') {
             firstRSH.stay();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q10;
+            curState = MultiplicationStateControl.Q10;
         } else {
             dumpTape2Exeption();
         }
@@ -234,20 +217,20 @@ public class MultiplicationStateControl {
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q7;
+            curState = MultiplicationStateControl.Q7;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.write('B');
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q7;
+            curState = MultiplicationStateControl.Q7;
         } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
             firstRSH.stay();
 
             secondRSH.moveLeft();
 
-            curState = MultiplicationStateControl.q8;
+            curState = MultiplicationStateControl.Q8;
         } else {
             dumpTape1Exeption();
         }
@@ -263,13 +246,13 @@ public class MultiplicationStateControl {
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q6;
+            curState = MultiplicationStateControl.Q6;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q0;
+            curState = MultiplicationStateControl.Q0;
         } else {
             dumpTape1Exeption();
         }
@@ -285,19 +268,19 @@ public class MultiplicationStateControl {
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q6;
+            curState = MultiplicationStateControl.Q6;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q5;
+            curState = MultiplicationStateControl.Q5;
         } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q7;
+            curState = MultiplicationStateControl.Q7;
         } else {
             dumpTape1Exeption();
         }
@@ -313,13 +296,13 @@ public class MultiplicationStateControl {
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q4;
+            curState = MultiplicationStateControl.Q4;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q5;
+            curState = MultiplicationStateControl.Q5;
         } else {
             dumpTape1Exeption();
         }
@@ -336,13 +319,13 @@ public class MultiplicationStateControl {
             secondRSH.write('0');
             secondRSH.moveRight();
 
-            curState = MultiplicationStateControl.q3;
+            curState = MultiplicationStateControl.Q3;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q4;
+            curState = MultiplicationStateControl.Q4;
         } else {
             dumpTape1Exeption();
         }
@@ -359,13 +342,13 @@ public class MultiplicationStateControl {
             secondRSH.write('0');
             secondRSH.moveRight();
 
-            curState = MultiplicationStateControl.q3;
+            curState = MultiplicationStateControl.Q3;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q9;
+            curState = MultiplicationStateControl.Q9;
         } else {
             dumpTape1Exeption();
         }
@@ -381,13 +364,13 @@ public class MultiplicationStateControl {
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q1;
+            curState = MultiplicationStateControl.Q1;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q2;
+            curState = MultiplicationStateControl.Q2;
         } else {
             dumpTape1Exeption();
         }
@@ -404,13 +387,13 @@ public class MultiplicationStateControl {
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q1;
+            curState = MultiplicationStateControl.Q1;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.stay();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.q7;
+            curState = MultiplicationStateControl.Q7;
         } else {
             dumpTape1Exeption();
         }
@@ -428,6 +411,32 @@ public class MultiplicationStateControl {
     private void dumpTape1Exeption() {
         System.err.println("Zustand: " + curConfiguration.getCurState() + " Ungültiger Buchstabe auf Band 1:"
                 + curConfiguration.getFirstTapeCharacter());
+    }
+
+    /**
+     * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale.
+     * Der Lese-Schreibkopf des ersten Bandes steht nach dieser Operation hinter
+     * der letzten Ziffer der Zahl.
+     * 
+     * @return das Ergebnis der Rechnung als Decimalzahl.
+     */
+    public int getFirstNumberAsInteger() {
+        int i = 0;
+    
+        firstRSH.moveLeft();
+    
+        while (firstRSH.read() != 'B') {
+            firstRSH.moveLeft();
+        }
+    
+        firstRSH.moveRight();
+    
+        while (firstRSH.read() == '0') {
+            firstRSH.moveRight();
+            i++;
+        }
+    
+        return i;
     }
 
     public void printCurrentState() {
