@@ -10,13 +10,15 @@ import java.util.Stack;
  */
 public class ReadWriteHead extends Observable{
 
-    public static int LEFT = 0;
-    public static int RIGHT = 1;
+    // Richtig wären Grossbuchstaben L,R,S ... der Übersicht zuliebe anders.
+    public static String LEFT = "left";
+    public static String RIGHT = "right";
+    public static String STAY = "stay";
     
     private final Stack<Character> prefix = new Stack<Character>();
     private final Stack<Character> suffix = new Stack<Character>();
 
-    private int lastDirection; 
+    private String lastDirection; 
     private Character curChar;
 
     /**
@@ -29,6 +31,10 @@ public class ReadWriteHead extends Observable{
         prefix.push('B');
     }
 
+    public void stay() {
+        lastDirection = ReadWriteHead.STAY;
+    }
+    
     public void moveRight() {
         prefix.push(curChar);
         curChar = suffix.pop();
@@ -97,7 +103,7 @@ public class ReadWriteHead extends Observable{
      *
      * @return Der Wert von lastDirection
      */
-    public int getLastDirection() {
+    public String getLastDirection() {
         return lastDirection;
     }
 }
