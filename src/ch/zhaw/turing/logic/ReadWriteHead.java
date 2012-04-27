@@ -42,7 +42,7 @@ public class ReadWriteHead extends Observable{
         // Simulation eines unendlichen Bandes
         // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
         // blanks werden in den Stack gepushed
-        if (curChar == 'B') {
+        if (curChar == 'B' && suffix.size() == 0) {
             suffix.push('B');
         }
          
@@ -57,7 +57,7 @@ public class ReadWriteHead extends Observable{
         // Simulation eines unendlichen Bandes
         // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
         // blanks werden in den Stack gepushed
-        if (curChar == 'B') {
+        if (curChar == 'B' && prefix.size() == 0) {
             prefix.push('B');
         }
 

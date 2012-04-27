@@ -67,6 +67,7 @@ public class FactorialStateControl {
      /**
       * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale.
       * Der Lese-Schreibkopf des ersten Bandes steht nach dieser Operation hinter der letzten Ziffer der Zahl.
+      * Diese Position wird auch als Ausgangspunkt für die Umwandelung angesehen.
       *
       * @return das Ergebnis der Rechnung als Decimalzahl.
       */
@@ -153,15 +154,14 @@ public class FactorialStateControl {
 
              curState = FactorialStateControl.q6;
          } else if (curConfiguration.getSecondTapeCharacter() == '1') {
-             firstRSH.write('B');
-             firstRSH.moveRight();
+             firstRSH.stay();
 
              secondRSH.write('B');
              secondRSH.moveLeft();
 
              curState = FactorialStateControl.q6;
          } else if (curConfiguration.getSecondTapeCharacter() == 'B') {
-             firstRSH.moveRight();
+             firstRSH.stay();
 
              secondRSH.stay();
 
@@ -215,9 +215,13 @@ public class FactorialStateControl {
          } else if (curConfiguration.getSecondTapeCharacter() == 'B') {
              firstRSH.moveRight();
 
-             secondRSH.stay();
+             // Auf erstes Zeichen stellen
+             secondRSH.moveRight();
 
-             new MultiplicationStateControl(secondRSH, thirdRSH);
+             MultiplicationStateControl myMultiplicationStateControl = new MultiplicationStateControl(secondRSH, thirdRSH);
+             myMultiplicationStateControl.doAllSteps();
+
+             curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
              
              if (curConfiguration.getFirstTapeCharacter() == '0') {
                  firstRSH.write('B');
