@@ -1,6 +1,5 @@
 package ch.zhaw.turing.logic;
 
-
 public class MultiplicationStateControl {
 
     // Hier werden alle Zustände, die es gibt erfasst.
@@ -22,26 +21,33 @@ public class MultiplicationStateControl {
     private ReadWriteHead secondRSH;
 
     /**
-     * Erstellt eine neue Zustandssteuerung für die Multiplikation und
-     * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
-     * dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben
-     * werden.
+     * Erstellt eine neue Zustandssteuerung für die Multiplikation die genau die
+     * mitgegebenen Bänder nutzt.
      * 
-     * @param multiplikator
-     *            linke Zahl der Multiplikation.
-     * @param multiplikant
-     *            rechte Zahl der Multiplikation.
+     * Die Position des LS-Kopfes des oberen Bandes muss dazu genau auf dem
+     * ersten Zeichen der Eingabe sein. Das Zweite Band muss leer sein.
+     * 
      * @param firstRSH
      *            der erste Lese-Schreibkopf der Maschine
      * @param secondRSH
      *            der zweite Lese-Schreibkopf der Maschine
      * 
      */
-    public MultiplicationStateControl(int multiplikator, int multiplikant, ReadWriteHead firstRSH,
-            ReadWriteHead secondRSH) {
+    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
+        curState = MultiplicationStateControl.q0;
+        curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
+    }
+
+    /**
+     * 
+     * @param multiplikator
+     * @param multiplikant
+     * @param firstRSH
+     */
+    private void setUpTape(int multiplikator, int multiplikant) {
         for (int i = 0; i < multiplikator; i++) {
             firstRSH.write('0');
             firstRSH.moveRight();
@@ -65,14 +71,12 @@ public class MultiplicationStateControl {
         } while (firstRSH.read() != 'B');
 
         firstRSH.moveRight();
-        curState = MultiplicationStateControl.q0;
-        curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
     }
 
     /**
      * Erstellt eine neue Zustandssteuerung für die Multiplikation und
-     * initialisiert das Band. Die Position des LS-Kopfes ist danach genau vor
-     * dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe werden automatisch
+     * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
+     * dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben
      * erstellt.
      * 
      * @param multiplikator
@@ -81,35 +85,50 @@ public class MultiplicationStateControl {
      *            rechte Zahl der Multiplikation.
      */
     public MultiplicationStateControl(int multiplikator, int multiplikant) {
-        this(multiplikator, multiplikant, new ReadWriteHead(), new ReadWriteHead());
+        this.firstRSH = new ReadWriteHead();
+        this.secondRSH = new ReadWriteHead();
+
+        setUpTape(multiplikator, multiplikant);
+        curState = MultiplicationStateControl.q0;
+        curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
     }
 
-    public void doAllSteps()
-    {
-        while(curConfiguration.getCurState() != MultiplicationStateControl.q10)
-        {
+    /**
+     * Führt alle Schritte der Multiplikation aus. Am Ende der Berechnung steht
+     * der Lese- Schreibkopf des oberen Bandes hinter der letzten Stelle der
+     * multiplizierten Zahl.
+     */
+    public void doAllSteps() {
+        while (curConfiguration.getCurState() != MultiplicationStateControl.q10) {
             doStep();
         }
-        
+
         System.out.println("Ergebnis: " + getFirstNumberAsInteger());
     }
-    
+
+    /**
+     * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale.
+     * Der Lese-Schreibkopf des ersten Bandes steht nach dieser Operation hinter
+     * der letzten Ziffer der Zahl.
+     * 
+     * @return das Ergebnis der Rechnung als Decimalzahl.
+     */
     public int getFirstNumberAsInteger() {
         int i = 0;
-        
+
         firstRSH.moveLeft();
-        
-        while (firstRSH.read() != 'B'){
+
+        while (firstRSH.read() != 'B') {
             firstRSH.moveLeft();
         }
-        
+
         firstRSH.moveRight();
-        
-        while (firstRSH.read() == '0'){
+
+        while (firstRSH.read() == '0') {
             firstRSH.moveRight();
             i++;
         }
-        
+
         return i;
     }
 
@@ -160,24 +179,24 @@ public class MultiplicationStateControl {
     private void handleQ9() {
         if (curConfiguration.getFirstTapeCharacter() == '0') {
             firstRSH.moveLeft();
-         
+
             secondRSH.stay();
-           
+
             curState = MultiplicationStateControl.q9;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
-    
+
             secondRSH.stay();
-      
+
             curState = MultiplicationStateControl.q9;
         } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
             secondRSH.moveRight();
-      
+
             curState = MultiplicationStateControl.q7;
         } else {
             dumpTape1Exeption();
         }
-        
+
         if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
             dumpTape2Exeption();
         }
@@ -194,13 +213,13 @@ public class MultiplicationStateControl {
 
             secondRSH.write('B');
             secondRSH.moveLeft();
-         
+
             curState = MultiplicationStateControl.q8;
         } else if (curConfiguration.getSecondTapeCharacter() == 'B') {
             firstRSH.stay();
-            
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q10;
         } else {
             dumpTape2Exeption();
@@ -214,20 +233,20 @@ public class MultiplicationStateControl {
             firstRSH.moveRight();
 
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q7;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.write('B');
             firstRSH.moveRight();
-        
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q7;
         } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
             firstRSH.stay();
-            
+
             secondRSH.moveLeft();
-          
+
             curState = MultiplicationStateControl.q8;
         } else {
             dumpTape1Exeption();
@@ -241,15 +260,15 @@ public class MultiplicationStateControl {
     private void handleQ6() {
         if (curConfiguration.getFirstTapeCharacter() == '0') {
             firstRSH.moveLeft();
-            
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q6;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveRight();
-       
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q0;
         } else {
             dumpTape1Exeption();
@@ -263,21 +282,21 @@ public class MultiplicationStateControl {
     private void handleQ5() {
         if (curConfiguration.getFirstTapeCharacter() == '0') {
             firstRSH.moveLeft();
-          
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q6;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
-          
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q5;
         } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
             firstRSH.moveRight();
-           
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q7;
         } else {
             dumpTape1Exeption();
@@ -291,15 +310,15 @@ public class MultiplicationStateControl {
     private void handleQ4() {
         if (curConfiguration.getFirstTapeCharacter() == '0') {
             firstRSH.moveLeft();
-          
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q4;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
-          
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q5;
         } else {
             dumpTape1Exeption();
@@ -320,9 +339,9 @@ public class MultiplicationStateControl {
             curState = MultiplicationStateControl.q3;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
-         
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q4;
         } else {
             dumpTape1Exeption();
@@ -343,9 +362,9 @@ public class MultiplicationStateControl {
             curState = MultiplicationStateControl.q3;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveLeft();
-            
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q9;
         } else {
             dumpTape1Exeption();
@@ -359,15 +378,15 @@ public class MultiplicationStateControl {
     private void handleQ1() {
         if (curConfiguration.getFirstTapeCharacter() == '0') {
             firstRSH.moveRight();
-          
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q1;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.moveRight();
-            
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q2;
         } else {
             dumpTape1Exeption();
@@ -382,15 +401,15 @@ public class MultiplicationStateControl {
         if (curConfiguration.getFirstTapeCharacter() == '0') {
             firstRSH.write('1');
             firstRSH.moveRight();
-        
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q1;
         } else if (curConfiguration.getFirstTapeCharacter() == '1') {
             firstRSH.stay();
-            
+
             secondRSH.stay();
-            
+
             curState = MultiplicationStateControl.q7;
         } else {
             dumpTape1Exeption();
@@ -412,12 +431,13 @@ public class MultiplicationStateControl {
     }
 
     public void printCurrentState() {
-        System.out.print("d{" + curConfiguration.getCurState() + ", "
-                + curConfiguration.getFirstTapeCharacter() + ", " + curConfiguration.getSecondTapeCharacter() + "}");
+        System.out.print("d{" + curConfiguration.getCurState() + ", " + curConfiguration.getFirstTapeCharacter() + ", "
+                + curConfiguration.getSecondTapeCharacter() + "}");
     }
-    
+
     public void printCurrentStateWithDirection() {
-        System.out.println(" |- d{" + curConfiguration.getCurState() + ", "
-                + curConfiguration.getFirstTapeCharacter() + ", " + curConfiguration.getSecondTapeCharacter() + ", " + firstRSH.getLastDirection() + ", " + secondRSH.getLastDirection() + "}");
+        System.out.println(" |- d{" + curConfiguration.getCurState() + ", " + curConfiguration.getFirstTapeCharacter()
+                + ", " + curConfiguration.getSecondTapeCharacter() + ", " + firstRSH.getLastDirection() + ", "
+                + secondRSH.getLastDirection() + "}");
     }
 }
