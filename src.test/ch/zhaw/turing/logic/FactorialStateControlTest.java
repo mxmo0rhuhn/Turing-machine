@@ -92,16 +92,19 @@ public class FactorialStateControlTest {
     // curFactorialStateControl.getFirstNumberAsInteger());
     // }
     //
-    // @Test
-    // public void factorialOfEight() {
-    // FactorialStateControl curFactorialStateControl = new
-    // FactorialStateControl(8);
+    // > 8h
+//     @Test
+//     public void factorialOfEight() {
+//     FactorialStateControl curFactorialStateControl = new
+//     FactorialStateControl(8);
+//    
+//     curFactorialStateControl.doAllSteps();
+//    
+//     Assert.assertEquals(40320,
+//     curFactorialStateControl.getFirstNumberAsInteger());
+//     }
     //
-    // curFactorialStateControl.doAllSteps();
-    //
-    // Assert.assertEquals(40320,
-    // curFactorialStateControl.getFirstNumberAsInteger());
-    // }
+    // oo +1
     //
     // @Test
     // public void factorialOfTen() {
