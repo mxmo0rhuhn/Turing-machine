@@ -1,6 +1,12 @@
 package ch.zhaw.turing.logic;
 
 import java.util.Observable;
+import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.ONE_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
 
 public class MultiplicationStateControl extends Observable {
 
@@ -52,21 +58,21 @@ public class MultiplicationStateControl extends Observable {
      */
     private void setUpTape(int multiplikator, int multiplikant) {
         for (int i = 0; i < multiplikator; i++) {
-            firstRSH.write('0');
+            firstRSH.write(ZERO_VALUE);
             firstRSH.moveRight();
         }
 
         // Trennzeichen der zwei Zahlen
-        firstRSH.write('1');
+        firstRSH.write(ONE_CHAR);
         firstRSH.moveRight();
 
         for (int i = 0; i < multiplikant; i++) {
-            firstRSH.write('0');
+            firstRSH.write(ZERO_VALUE);
             firstRSH.moveRight();
         }
 
         // Endzeichen
-        firstRSH.write('1');
+        firstRSH.write(ONE_CHAR);
 
         // wieder an die Ausgangsposition fahren
         do {
@@ -102,303 +108,301 @@ public class MultiplicationStateControl extends Observable {
      * multiplizierten Zahl.
      */
     public void doAllSteps() {
-        while (curConfiguration.getCurState() != MultiplicationStateControl.Q10) {
-            doStep();
+        String curState = MultiplicationStateControl.Q0;
+        
+        while (curState != MultiplicationStateControl.Q10) {
+            curState = doStep();
         }
     }
 
-    public void doStep() {
+    public String doStep() {
         //printCurrentState();
 
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
+        
+        String nextState;
 
         if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q0)) {
-            handleQ0();
+            nextState = handleQ0();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q1)) {
-            handleQ1();
+            nextState = handleQ1();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q2)) {
-            handleQ2();
+            nextState = handleQ2();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q3)) {
-            handleQ3();
+            nextState = handleQ3();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q4)) {
-            handleQ4();
+            nextState = handleQ4();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q5)) {
-            handleQ5();
+            nextState = handleQ5();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q6)) {
-            handleQ6();
+            nextState = handleQ6();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q7)) {
-            handleQ7();
+            nextState = handleQ7();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q8)) {
-            handleQ8();
+            nextState = handleQ8();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q9)) {
-            handleQ9();
+            nextState = handleQ9();
         } else if (curConfiguration.getCurState().equals(MultiplicationStateControl.Q10)) {
-            handleQ10();
+            nextState = handleQ10();
+        } else {
+            throw new IllegalStateException(curConfiguration.getCurState() + " existiert nicht");
         }
         
-        if(!curState.equals(curConfiguration.getCurState()))
-        {
-            setChanged();
-            notifyObservers();
-        }
-
-        curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
+        curConfiguration = new TwoTapeConfiguration(nextState, firstRSH.read(), secondRSH.read());
         //printCurrentStateWithDirection();
+        
+        return nextState;
     }
 
-    private void handleQ10() {
-        if (!(curConfiguration.getFirstTapeCharacter() == 'B')) {
+    private String handleQ10() {
+        if (!(curConfiguration.getFirstTapeCharacter() == EMPTY_CHAR)) {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
+        
+        return MultiplicationStateControl.Q10;
     }
 
-    private void handleQ9() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+    private String handleQ9() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q9;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
+            return MultiplicationStateControl.Q9;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q9;
-        } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
+            return MultiplicationStateControl.Q9;
+        } else if (curConfiguration.getFirstTapeCharacter() == EMPTY_CHAR) {
             secondRSH.moveRight();
 
-            curState = MultiplicationStateControl.Q7;
+            return MultiplicationStateControl.Q7;
         } else {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
+        
+        return null;
     }
 
-    private void handleQ8() {
-        if (!(curConfiguration.getFirstTapeCharacter() == 'B')) {
+    private String handleQ8() {
+        if (!(curConfiguration.getFirstTapeCharacter() == EMPTY_CHAR)) {
             dumpTape1Exeption();
         }
 
-        if (curConfiguration.getSecondTapeCharacter() == '0') {
-            firstRSH.write('0');
+        if (curConfiguration.getSecondTapeCharacter() == ZERO_CHAR) {
+            firstRSH.write(ZERO_VALUE);
             firstRSH.moveRight();
 
-            secondRSH.write('B');
+            secondRSH.write(EMPTY_VALUE);
             secondRSH.moveLeft();
 
-            curState = MultiplicationStateControl.Q8;
-        } else if (curConfiguration.getSecondTapeCharacter() == 'B') {
+            return MultiplicationStateControl.Q8;
+        } else if (curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR) {
             firstRSH.stay();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q10;
+            return MultiplicationStateControl.Q10;
         } else {
             dumpTape2Exeption();
+            return null;
         }
-
     }
 
-    private void handleQ7() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
-            firstRSH.write('B');
+    private String handleQ7() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
+            firstRSH.write(EMPTY_VALUE);
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q7;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
-            firstRSH.write('B');
+            return MultiplicationStateControl.Q7;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
+            firstRSH.write(EMPTY_VALUE);
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q7;
-        } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
+            return MultiplicationStateControl.Q7;
+        } else if (curConfiguration.getFirstTapeCharacter() == EMPTY_CHAR) {
             firstRSH.stay();
 
             secondRSH.moveLeft();
 
-            curState = MultiplicationStateControl.Q8;
+            return MultiplicationStateControl.Q8;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ6() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+    private String handleQ6() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q6;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
+            return MultiplicationStateControl.Q6;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q0;
+            return MultiplicationStateControl.Q0;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ5() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+    private String handleQ5() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q6;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
+            return MultiplicationStateControl.Q6;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q5;
-        } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
+            return MultiplicationStateControl.Q5;
+        } else if (curConfiguration.getFirstTapeCharacter() == EMPTY_CHAR) {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q7;
+            return MultiplicationStateControl.Q7;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ4() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+    private String handleQ4() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q4;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
+            return MultiplicationStateControl.Q4;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q5;
+            return MultiplicationStateControl.Q5;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ3() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+    private String handleQ3() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
             firstRSH.moveRight();
 
-            secondRSH.write('0');
+            secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            curState = MultiplicationStateControl.Q3;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
+            return MultiplicationStateControl.Q3;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q4;
+            return MultiplicationStateControl.Q4;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ2() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+    private String handleQ2() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
             firstRSH.moveRight();
 
-            secondRSH.write('0');
+            secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            curState = MultiplicationStateControl.Q3;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
+            return MultiplicationStateControl.Q3;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q9;
+            return MultiplicationStateControl.Q9;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ1() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+    private String handleQ1() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q1;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
+            return MultiplicationStateControl.Q1;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q2;
+            return MultiplicationStateControl.Q2;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ0() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
-            firstRSH.write('1');
+    private String handleQ0() {
+        if (curConfiguration.getFirstTapeCharacter() == ZERO_CHAR) {
+            firstRSH.write(ONE_VALUE);
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q1;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
+            return MultiplicationStateControl.Q1;
+        } else if (curConfiguration.getFirstTapeCharacter() == ONE_CHAR) {
             firstRSH.stay();
 
             secondRSH.stay();
 
-            curState = MultiplicationStateControl.Q7;
+            return MultiplicationStateControl.Q7;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private void dumpTape2Exeption() {
