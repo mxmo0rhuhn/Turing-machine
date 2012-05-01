@@ -1,14 +1,13 @@
 package ch.zhaw.turing.logic;
 
-import java.util.Observable;
-import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
 import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
 import static ch.zhaw.turing.logic.ReadWriteHead.ONE_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
 
-public class FactorialStateControl extends Observable {
+public class FactorialStateControl {
 
     public static final String Q0 = "Q0";
     public static final String Q1 = "Q1";
@@ -24,6 +23,8 @@ public class FactorialStateControl extends Observable {
     private ReadWriteHead secondRSH;
     private ReadWriteHead thirdRSH;
 
+    private final ZustandsUebergansListener listener;
+
     /**
      * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und initialisiert das Band. Die Position des
      * LS-Kopfes ist danach genau auf dem ersten Zeichen der Eingabe.
@@ -31,10 +32,12 @@ public class FactorialStateControl extends Observable {
      * @param number
      *            die Zahl deren Fakultät berechnet werden soll.
      */
-    public FactorialStateControl(int number) {
+    public FactorialStateControl(int number, ZustandsUebergansListener listener) {
         this.firstRSH = new ReadWriteHead();
         this.secondRSH = new ReadWriteHead();
         this.thirdRSH = new ReadWriteHead();
+
+        this.listener = listener;
 
         for (int i = 0; i < number; i++) {
             firstRSH.write('0');
@@ -55,7 +58,7 @@ public class FactorialStateControl extends Observable {
     public void doAllSteps() {
         ReadWriteHead firstRSH = this.firstRSH;
         ReadWriteHead secondRSH = this.secondRSH;
-        
+
         // Startzustand
         String curState = FactorialStateControl.Q0;
         Character fstTapeChar = firstRSH.read().charValue();
@@ -66,8 +69,6 @@ public class FactorialStateControl extends Observable {
             fstTapeChar = firstRSH.read().charValue();
             sndTapeChar = secondRSH.read().charValue();
         }
-
-        // System.out.println("Ergebnis: " + getFirstNumberAsInteger());
     }
 
     public String doStep(String lastState, char fstTapeChar, char sndTapeChar) {
@@ -177,8 +178,6 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption(FactorialStateControl.Q5, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ4(char fstTapeChar, char sndTapeChar) {
@@ -208,7 +207,20 @@ public class FactorialStateControl extends Observable {
             secondRSH.moveRight();
 
             MultiplicationStateControl myMultiplicationStateControl = new MultiplicationStateControl(secondRSH,
-                    thirdRSH);
+                    thirdRSH, new ZustandsUebergansListener() {
+
+                        @Override
+                        public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes) {
+                            // events von der multiplikation einfach weiterleiten..
+                            // aber dort gibs nur zwei baender, also muessen wir das noch
+                            // etwas umbiegen, dass dieser listener mit dem umgehen kann.
+                            // eigentlich sind die zwei tapes von der multiplikation in diesem
+                            // fall wieder die gleichen, aber das keonnte sich ja wechseln..
+                            // obowhl.. vieles koennte sich wechseln.
+                            ReadWriteHead[] facTapes = new ReadWriteHead[]{tapes[0], tapes[1], thirdRSH};
+                            listener.inNeuenZustandGewechselt(zustand, facTapes);
+                        }
+                    });
             myMultiplicationStateControl.doAllSteps();
 
             if (firstRSH.read().charValue() == ZERO_CHAR) {
@@ -222,9 +234,6 @@ public class FactorialStateControl extends Observable {
                 dumpTape1Exeption(FactorialStateControl.Q4, fstTapeChar);
                 return null;
             }
-
-            // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
-
         } else {
             dumpTape2Exeption(FactorialStateControl.Q4, sndTapeChar);
             return null;
@@ -250,8 +259,6 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption(FactorialStateControl.Q3, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ2(char fstTapeChar, char sndTapeChar) {
@@ -272,8 +279,6 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption(FactorialStateControl.Q2, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ1(char fstTapeChar, char sndTapeChar) {
@@ -299,11 +304,6 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption(FactorialStateControl.Q1, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
-        // dumpTape2Exeption();
-        // }
-        // Reto optimiert: Wir haben doch genügend Unit Tests um sicherzustellen, dass da nicht schief geht?
     }
 
     private String handleQ0(char fstTapeChar, char sndTapeChar) {
@@ -326,18 +326,14 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption(FactorialStateControl.Q0, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private void dumpTape2Exeption(String zustand, char sndTapeChar) {
-        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 2:"
-                + sndTapeChar);
+        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 2:" + sndTapeChar);
     }
 
     private void dumpTape1Exeption(String zustand, char fstTapeChar) {
-        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:"
-                + fstTapeChar);
+        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:" + fstTapeChar);
     }
 
     /**

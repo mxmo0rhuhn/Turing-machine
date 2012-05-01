@@ -8,9 +8,9 @@ import org.junit.Test;
  * 
  * @author Max Schrimpf
  */
-public class MultiplicationStateControlTest {
+public class MultiplicationStateControlTest implements ZustandsUebergansListener {
 
-    private static final boolean debug = true;
+    private static final boolean debug = false;
 
     private static final int ITERATIONEN = 100;
 
@@ -19,24 +19,35 @@ public class MultiplicationStateControlTest {
         for (int i = 0; i < ITERATIONEN; i++) {
             Assert.assertTrue(multiplikationKorrekt(i, i + 1));
             if (debug) {
-                System.out.printf("%d * %d korrekt\n", i, i + 1);
+                System.out.printf("TEST: %d * %d korrekt\n", i, i + 1);
             }
             Assert.assertTrue(multiplikationKorrekt(i + 1, i));
             if (debug) {
-                System.out.printf("%d * %d korrekt\n", i + 1, i);
+                System.out.printf("TEST: %d * %d korrekt\n", i + 1, i);
             }
             Assert.assertTrue(multiplikationKorrekt(i, i));
             if (debug) {
-                System.out.printf("%d * %d korrekt\n", i, i);
+                System.out.printf("TEST: %d * %d korrekt\n", i, i);
             }
         }
     }
 
     private boolean multiplikationKorrekt(int a, int b) {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(a, b);
+        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(a, b, this);
         curMultiplicationStateControl.doAllSteps();
         int result = curMultiplicationStateControl.getFirstNumberAsInteger();
         return result == a * b;
+    }
+
+    @Override
+    public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes) {
+        if (!debug) {
+            return;
+        }
+        System.out.println("Neuer Zustand: " + zustand);
+        for (ReadWriteHead rwHead : tapes) {
+            System.out.println(rwHead);
+        }
     }
 
 }

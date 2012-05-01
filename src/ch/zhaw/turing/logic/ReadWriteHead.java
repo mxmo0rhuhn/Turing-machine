@@ -2,14 +2,13 @@ package ch.zhaw.turing.logic;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Observable;
 
 /**
  * Stellt ein einzelnes Band mit einer Spur und einem Lese-Schreib Kopf dar
  * 
  * @author Max Schrimpf
  */
-public class ReadWriteHead extends Observable {
+public final class ReadWriteHead {
 
     // Richtig wären Grossbuchstaben L,R,S ... der Übersicht zuliebe anders.
     public static enum DIRECTION {
@@ -20,14 +19,14 @@ public class ReadWriteHead extends Observable {
     private final LinkedList<Character> suffix = new LinkedList<Character>();
     
     // primitve typen um auto-boxing wenn immer möglich zu vermeiden
-    public static final char EMPTY_CHAR = 'B';
-    public static final char ZERO_CHAR = '0';
-    public static final char ONE_CHAR = '1';
+    static final char EMPTY_CHAR = 'B';
+    static final char ZERO_CHAR = '0';
+    static final char ONE_CHAR = '1';
     
     // wrapper type um auto-boxing wenn immer möglich zu vermeiden
-    public static final Character EMPTY_VALUE = new Character('B');
-    public static final Character ZERO_VALUE = new Character('0');
-    public static final Character ONE_VALUE = new Character('1');
+    static final Character EMPTY_VALUE = new Character('B');
+    static final Character ZERO_VALUE = new Character('0');
+    static final Character ONE_VALUE = new Character('1');
 
 
     private DIRECTION lastDirection;
@@ -38,17 +37,17 @@ public class ReadWriteHead extends Observable {
      * Initialisiert den Lese Schreib Kopf. Der derzeitige Buchstabe ist nun ein
      * Blank. Im Suffix ist nun auch ein Blank.
      */
-    public ReadWriteHead() {
+    ReadWriteHead() {
         curChar = EMPTY_VALUE;
         suffix.push(EMPTY_VALUE);
         prefix.push(EMPTY_VALUE);
     }
 
-    public void stay() {
+    void stay() {
         lastDirection = DIRECTION.STAY;
     }
 
-    public void moveRight() {
+    void moveRight() {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
         
@@ -68,7 +67,7 @@ public class ReadWriteHead extends Observable {
         //sendNotification();
     }
     
-    public void moveLeft() {
+    void moveLeft() {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
         suffix.push(curChar);
@@ -89,11 +88,11 @@ public class ReadWriteHead extends Observable {
         //sendNotification();
     }
     
-    public Character read() {
+    Character read() {
         return curChar;
     }
 
-    public void write(Character newCharacter) {
+    void write(Character newCharacter) {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
         
@@ -115,7 +114,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von prefix
      */
-    public Deque<Character> getPrefix() {
+    Deque<Character> getPrefix() {
         return prefix;
     }
 
@@ -124,7 +123,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von suffix
      */
-    public Deque<Character> getSuffix() {
+    Deque<Character> getSuffix() {
         return suffix;
     }
 
@@ -133,7 +132,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von lastDirection
      */
-    public DIRECTION getLastDirection() {
+    DIRECTION getLastDirection() {
         return lastDirection;
     }
 }

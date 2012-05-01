@@ -1,14 +1,13 @@
 package ch.zhaw.turing.logic;
 
-import java.util.Observable;
 import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ONE_CHAR;
 import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.ONE_CHAR;
 import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
 
-public class MultiplicationStateControl extends Observable {
+public class MultiplicationStateControl {
 
     public static final String Q0 = "Q0";
     public static final String Q1 = "Q1";
@@ -22,8 +21,28 @@ public class MultiplicationStateControl extends Observable {
     public static final String Q9 = "Q9";
     public static final String Q10 = "Q10";
 
-    private ReadWriteHead firstRSH;
-    private ReadWriteHead secondRSH;
+    private final ReadWriteHead firstRSH;
+    private final ReadWriteHead secondRSH;
+    
+    private final ZustandsUebergansListener listener;
+    
+    /**
+     * Erstellt eine neue Zustandssteuerung für die Multiplikation und initialisiert das Band. Die Position des
+     * LS-Kopfes ist danach genau auf dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben erstellt.
+     * 
+     * @param multiplikator
+     *            linke Zahl der Multiplikation.
+     * @param multiplikant
+     *            rechte Zahl der Multiplikation.
+     */
+    public MultiplicationStateControl(int multiplikator, int multiplikant, ZustandsUebergansListener listener) {
+        this.firstRSH = new ReadWriteHead();
+        this.secondRSH = new ReadWriteHead();
+        
+        this.listener = listener;
+        
+        setUpTape(multiplikator, multiplikant);
+    }
 
     /**
      * Erstellt eine neue Zustandssteuerung für die Multiplikation die genau die mitgegebenen Bänder nutzt.
@@ -37,10 +56,11 @@ public class MultiplicationStateControl extends Observable {
      *            der zweite Lese-Schreibkopf der Maschine
      * 
      */
-    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH) {
+    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH, ZustandsUebergansListener listener) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
-
+        
+        this.listener = listener;
     }
 
     /**
@@ -76,37 +96,24 @@ public class MultiplicationStateControl extends Observable {
     }
 
     /**
-     * Erstellt eine neue Zustandssteuerung für die Multiplikation und initialisiert das Band. Die Position des
-     * LS-Kopfes ist danach genau auf dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben erstellt.
-     * 
-     * @param multiplikator
-     *            linke Zahl der Multiplikation.
-     * @param multiplikant
-     *            rechte Zahl der Multiplikation.
-     */
-    public MultiplicationStateControl(int multiplikator, int multiplikant) {
-        this.firstRSH = new ReadWriteHead();
-        this.secondRSH = new ReadWriteHead();
-
-        setUpTape(multiplikator, multiplikant);
-    }
-
-    /**
      * Führt alle Schritte der Multiplikation aus. Am Ende der Berechnung steht der Lese- Schreibkopf des oberen Bandes
      * hinter der letzten Stelle der multiplizierten Zahl.
      */
-    public void doAllSteps() {
-        ReadWriteHead firstRSH = this.firstRSH;
-        ReadWriteHead secondRSH = this.secondRSH;
-        Character fstTapeChar = firstRSH.read().charValue();
-        Character sndTapeChar = secondRSH.read().charValue();
+    public void doAllSteps() {        
+        ReadWriteHead[] tapes = new ReadWriteHead[]{this.firstRSH, this.secondRSH};
+        
+        Character fstTapeChar = tapes[0].read().charValue();
+        Character sndTapeChar = tapes[1].read().charValue();
 
         String curState = MultiplicationStateControl.Q0;
 
         while (curState != MultiplicationStateControl.Q10) {
             curState = doStep(curState, fstTapeChar, sndTapeChar);
-            fstTapeChar = firstRSH.read().charValue();
-            sndTapeChar = secondRSH.read().charValue();
+            
+            this.listener.inNeuenZustandGewechselt(curState, tapes);
+            
+            fstTapeChar = tapes[0].read().charValue();
+            sndTapeChar = tapes[1].read().charValue();
         }
     }
 
@@ -240,14 +247,12 @@ public class MultiplicationStateControl extends Observable {
             dumpTape1Exeption(MultiplicationStateControl.Q7, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ6(char fstTapeChar, char sndTapeChar) {
         ReadWriteHead firstRSH = this.firstRSH;
         ReadWriteHead secondRSH = this.secondRSH;
-        
+
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveLeft();
 
@@ -264,8 +269,6 @@ public class MultiplicationStateControl extends Observable {
             dumpTape1Exeption(MultiplicationStateControl.Q6, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ5(char fstTapeChar, char sndTapeChar) {
@@ -291,8 +294,6 @@ public class MultiplicationStateControl extends Observable {
             dumpTape1Exeption(MultiplicationStateControl.Q5, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ4(char fstTapeChar, char sndTapeChar) {
@@ -312,8 +313,6 @@ public class MultiplicationStateControl extends Observable {
             dumpTape1Exeption(MultiplicationStateControl.Q4, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ3(char fstTapeChar, char sndTapeChar) {
@@ -334,8 +333,6 @@ public class MultiplicationStateControl extends Observable {
             dumpTape1Exeption(MultiplicationStateControl.Q3, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ2(char fstTapeChar, char sndTapeChar) {
@@ -356,14 +353,12 @@ public class MultiplicationStateControl extends Observable {
             dumpTape1Exeption(MultiplicationStateControl.Q2, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ1(char fstTapeChar, char sndTapeChar) {
         ReadWriteHead firstRSH = this.firstRSH;
         ReadWriteHead secondRSH = this.secondRSH;
-        
+
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveRight();
 
@@ -380,8 +375,6 @@ public class MultiplicationStateControl extends Observable {
             dumpTape1Exeption(MultiplicationStateControl.Q1, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private String handleQ0(char fstTapeChar, char sndTapeChar) {
@@ -402,8 +395,6 @@ public class MultiplicationStateControl extends Observable {
             dumpTape1Exeption(MultiplicationStateControl.Q0, fstTapeChar);
             return null;
         }
-
-        // if (!(curConfiguration.getSecondTapeCharacter() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private void dumpTape2Exeption(String zustand, char sndTapeChar) {
