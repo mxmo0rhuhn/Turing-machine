@@ -105,12 +105,10 @@ public class MultiplicationStateControl extends Observable {
         while (curConfiguration.getCurState() != MultiplicationStateControl.Q10) {
             doStep();
         }
-
-        System.out.println("Ergebnis: " + getFirstNumberAsInteger());
     }
 
     public void doStep() {
-        printCurrentState();
+        //printCurrentState();
 
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
@@ -146,7 +144,7 @@ public class MultiplicationStateControl extends Observable {
         }
 
         curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
-        printCurrentStateWithDirection();
+        //printCurrentStateWithDirection();
     }
 
     private void handleQ10() {

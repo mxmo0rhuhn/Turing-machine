@@ -1,6 +1,12 @@
 package ch.zhaw.turing.logic;
 
 import java.util.Observable;
+import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
+import static ch.zhaw.turing.logic.ReadWriteHead.ONE_CHAR;
 
 public class FactorialStateControl extends Observable {
 
@@ -15,17 +21,16 @@ public class FactorialStateControl extends Observable {
     public static final String Q8 = "Q8";
 
     private TwoTapeConfiguration curConfiguration;
-    
+
     private String curState;
-    
+
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
     private ReadWriteHead thirdRSH;
 
     /**
-     * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und
-     * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
-     * dem ersten Zeichen der Eingabe.
+     * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und initialisiert das Band. Die Position des
+     * LS-Kopfes ist danach genau auf dem ersten Zeichen der Eingabe.
      * 
      * @param number
      *            die Zahl deren Fakultät berechnet werden soll.
@@ -54,17 +59,18 @@ public class FactorialStateControl extends Observable {
     }
 
     public void doAllSteps() {
-
-        while ((curConfiguration.getCurState() != FactorialStateControl.Q8)
-                && (curConfiguration.getCurState() != FactorialStateControl.Q7)) {
+        String curState = this.curConfiguration.getCurState();
+        
+        while ((curState != FactorialStateControl.Q8)
+                && (curState != FactorialStateControl.Q7)) {
             doStep();
         }
 
-        System.out.println("Ergebnis: " + getFirstNumberAsInteger());
+        // System.out.println("Ergebnis: " + getFirstNumberAsInteger());
     }
 
     public void doStep() {
-        printCurrentState();
+        // printCurrentState();
 
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
@@ -89,57 +95,60 @@ public class FactorialStateControl extends Observable {
             handleQ8();
         }
 
-        if(!curState.equals(curConfiguration.getCurState()))
-        {
+        if (!curState.equals(curConfiguration.getCurState())) {
             setChanged();
             notifyObservers();
         }
-            
+
         curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
-        printCurrentStateWithDirection();
+        // printCurrentStateWithDirection();
     }
 
     private void handleQ8() {
-        if (!(curConfiguration.getFirstTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
     }
 
     private void handleQ7() {
-        if (!(curConfiguration.getFirstTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
     }
 
     private void handleQ6() {
-        if (!(curConfiguration.getFirstTapeCharacter() == 'B')) {
+        ReadWriteHead firstRSH = this.firstRSH;
+        ReadWriteHead secondRSH = this.secondRSH;
+        TwoTapeConfiguration curConfiguration = this.curConfiguration;
+
+        if (!(curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape1Exeption();
         }
 
-        if (curConfiguration.getSecondTapeCharacter() == '0') {
-            firstRSH.write('0');
+        if (curConfiguration.getSecondTapeCharacter().charValue() == ZERO_CHAR) {
+            firstRSH.write(ZERO_VALUE);
             firstRSH.moveRight();
 
-            secondRSH.write('B');
+            secondRSH.write(EMPTY_VALUE);
             secondRSH.moveLeft();
 
             curState = FactorialStateControl.Q6;
-        } else if (curConfiguration.getSecondTapeCharacter() == '1') {
+        } else if (curConfiguration.getSecondTapeCharacter().charValue() == ONE_CHAR) {
             firstRSH.stay();
 
-            secondRSH.write('B');
+            secondRSH.write(EMPTY_VALUE);
             secondRSH.moveLeft();
 
             curState = FactorialStateControl.Q6;
-        } else if (curConfiguration.getSecondTapeCharacter() == 'B') {
+        } else if (curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.stay();
 
             secondRSH.stay();
@@ -151,16 +160,16 @@ public class FactorialStateControl extends Observable {
     }
 
     private void handleQ5() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+        if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
             curState = FactorialStateControl.Q5;
-        } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
+        } else if (curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.write('1');
+            secondRSH.write(ONE_VALUE);
             secondRSH.moveRight();
 
             curState = FactorialStateControl.Q2;
@@ -168,30 +177,30 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
     }
 
     private void handleQ4() {
 
-        if (!(curConfiguration.getFirstTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape1Exeption();
         }
 
-        if (curConfiguration.getSecondTapeCharacter() == '0') {
+        if (curConfiguration.getSecondTapeCharacter().charValue() == ZERO_CHAR) {
             firstRSH.stay();
 
             secondRSH.moveLeft();
 
             curState = FactorialStateControl.Q4;
-        } else if (curConfiguration.getSecondTapeCharacter() == '1') {
+        } else if (curConfiguration.getSecondTapeCharacter().charValue() == ONE_CHAR) {
             firstRSH.stay();
 
             secondRSH.moveLeft();
 
             curState = FactorialStateControl.Q4;
-        } else if (curConfiguration.getSecondTapeCharacter() == 'B') {
+        } else if (curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.moveRight();
 
             // Auf erstes Zeichen stellen
@@ -203,8 +212,8 @@ public class FactorialStateControl extends Observable {
 
             curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
 
-            if (curConfiguration.getFirstTapeCharacter() == '0') {
-                firstRSH.write('B');
+            if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
+                firstRSH.write(EMPTY_VALUE);
                 firstRSH.moveRight();
 
                 secondRSH.stay();
@@ -214,7 +223,7 @@ public class FactorialStateControl extends Observable {
                 dumpTape1Exeption();
             }
 
-            if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+            if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
                 dumpTape2Exeption();
             }
 
@@ -224,17 +233,17 @@ public class FactorialStateControl extends Observable {
     }
 
     private void handleQ3() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+        if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.write('0');
+            secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
             curState = FactorialStateControl.Q3;
-        } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
+        } else if (curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.stay();
 
-            secondRSH.write('1');
+            secondRSH.write(ONE_VALUE);
             secondRSH.moveLeft();
 
             curState = FactorialStateControl.Q4;
@@ -242,20 +251,20 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
     }
 
     private void handleQ2() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+        if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.write('0');
+            secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
             curState = FactorialStateControl.Q3;
-        } else if (curConfiguration.getFirstTapeCharacter() == 'B') {
+        } else if (curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.stay();
 
             secondRSH.moveLeft();
@@ -265,24 +274,28 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
     }
 
     private void handleQ1() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
+        ReadWriteHead firstRSH = this.firstRSH;
+        ReadWriteHead secondRSH = this.secondRSH;
+        char firstTapeCharacter = this.curConfiguration.getFirstTapeCharacter().charValue();
+
+        if (firstTapeCharacter == ZERO_VALUE.charValue()) {
             firstRSH.moveRight();
 
-            secondRSH.write('0');
+            secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
             curState = FactorialStateControl.Q1;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
-            firstRSH.write('B');
+        } else if (firstTapeCharacter == ONE_VALUE.charValue()) {
+            firstRSH.write(EMPTY_VALUE);
             firstRSH.moveLeft();
 
-            secondRSH.write('1');
+            secondRSH.write(ONE_VALUE);
             secondRSH.moveRight();
 
             curState = FactorialStateControl.Q2;
@@ -290,22 +303,23 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
-            dumpTape2Exeption();
-        }
+        // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
+        // dumpTape2Exeption();
+        // }
+        // Reto optimiert: Wir haben doch genügend Unit Tests um sicherzustellen, dass da nicht schief geht?
     }
 
     private void handleQ0() {
-        if (curConfiguration.getFirstTapeCharacter() == '0') {
-            firstRSH.write('B');
+        if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
+            firstRSH.write(EMPTY_VALUE);
             firstRSH.moveRight();
 
-            secondRSH.write('0');
+            secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
             curState = FactorialStateControl.Q1;
-        } else if (curConfiguration.getFirstTapeCharacter() == '1') {
-            firstRSH.write('0');
+        } else if (curConfiguration.getFirstTapeCharacter().charValue() == ONE_CHAR) {
+            firstRSH.write(ZERO_VALUE);
             firstRSH.stay();
 
             secondRSH.stay();
@@ -315,7 +329,7 @@ public class FactorialStateControl extends Observable {
             dumpTape1Exeption();
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter() == 'B')) {
+        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
     }
@@ -331,29 +345,28 @@ public class FactorialStateControl extends Observable {
     }
 
     /**
-     * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale.
-     * Der Lese-Schreibkopf des ersten Bandes steht nach dieser Operation hinter
-     * der letzten Ziffer der Zahl. Diese Position wird auch als Ausgangspunkt
-     * für die Umwandelung angesehen.
+     * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale. Der Lese-Schreibkopf des ersten Bandes
+     * steht nach dieser Operation hinter der letzten Ziffer der Zahl. Diese Position wird auch als Ausgangspunkt für
+     * die Umwandelung angesehen.
      * 
      * @return das Ergebnis der Rechnung als Decimalzahl.
      */
     public int getFirstNumberAsInteger() {
         int i = 0;
-    
+
         firstRSH.moveLeft();
-    
+
         while (firstRSH.read() != 'B') {
             firstRSH.moveLeft();
         }
-    
+
         firstRSH.moveRight();
-    
+
         while (firstRSH.read() == '0') {
             firstRSH.moveRight();
             i++;
         }
-    
+
         return i;
     }
 

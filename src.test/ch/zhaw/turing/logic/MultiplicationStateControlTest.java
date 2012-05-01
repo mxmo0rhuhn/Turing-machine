@@ -11,7 +11,7 @@ import org.junit.Test;
  */ 
 public class MultiplicationStateControlTest {
 
-    private static final int ITERATIONEN = 20;    
+    private static final int ITERATIONEN = 100;    
     
     @Test
     public void sollRichtigMultiplizieren() {

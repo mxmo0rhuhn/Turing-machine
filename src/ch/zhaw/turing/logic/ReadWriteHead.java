@@ -1,7 +1,8 @@
 package ch.zhaw.turing.logic;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Observable;
-import java.util.Stack;
 
 /**
  * Stellt ein einzelnes Band mit einer Spur und einem Lese-Schreib Kopf dar
@@ -15,8 +16,19 @@ public class ReadWriteHead extends Observable {
     public static String RIGHT = "right";
     public static String STAY = "stay";
 
-    private final Stack<Character> prefix = new Stack<Character>();
-    private final Stack<Character> suffix = new Stack<Character>();
+//    private final Stack<Character> prefix = new Stack<Character>();
+//    private final Stack<Character> suffix = new Stack<Character>();
+    
+    private final Deque<Character> prefix = new LinkedList<Character>();
+    private final Deque<Character> suffix = new LinkedList<Character>();
+    
+    public static final char EMPTY_CHAR = 'B';
+    public static final char ZERO_CHAR = '0';
+    public static final char ONE_CHAR = '1';
+    public static final Character EMPTY_VALUE = new Character('B');
+    public static final Character ZERO_VALUE = new Character('0');
+    public static final Character ONE_VALUE = new Character('1');
+
 
     private String lastDirection;
     private Character curChar;
@@ -26,9 +38,9 @@ public class ReadWriteHead extends Observable {
      * Blank. Im Suffix ist nun auch ein Blank.
      */
     public ReadWriteHead() {
-        curChar = 'B';
-        suffix.push('B');
-        prefix.push('B');
+        curChar = EMPTY_VALUE;
+        suffix.push(EMPTY_VALUE);
+        prefix.push(EMPTY_VALUE);
     }
 
     public void stay() {
@@ -36,33 +48,43 @@ public class ReadWriteHead extends Observable {
     }
 
     public void moveRight() {
+        Deque<Character> prefix = this.prefix;
+        Deque<Character> suffix = this.suffix;
+        
         prefix.push(curChar);
-        curChar = suffix.pop();
+        Character curChar = suffix.pop();
 
         // Simulation eines unendlichen Bandes
         // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
         // blanks werden in den Stack gepushed
-        if (curChar == 'B' && suffix.size() == 0) {
-            suffix.push('B');
+        if (curChar.charValue() == EMPTY_CHAR && suffix.size() == 0) {
+            suffix.push(EMPTY_VALUE);
         }
+        
+        this.curChar = curChar;
 
         lastDirection = ReadWriteHead.RIGHT;
-        sendNotification();
+        //sendNotification();
     }
 
     public void moveLeft() {
+        Deque<Character> prefix = this.prefix;
+        Deque<Character> suffix = this.suffix;
         suffix.push(curChar);
-        curChar = prefix.pop();
+        
+        Character curChar = prefix.pop();
 
         // Simulation eines unendlichen Bandes
         // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
         // blanks werden in den Stack gepushed
-        if (curChar == 'B' && prefix.size() == 0) {
-            prefix.push('B');
+        if (curChar.charValue() == EMPTY_CHAR && prefix.size() == 0) {
+            prefix.push(EMPTY_VALUE);
         }
+        
+        this.curChar = curChar;
 
         lastDirection = ReadWriteHead.LEFT;
-        sendNotification();
+        //sendNotification();
     }
 
     public Character read() {
@@ -70,14 +92,16 @@ public class ReadWriteHead extends Observable {
     }
 
     public void write(Character newCharacter) {
-
+        Deque<Character> prefix = this.prefix;
+        Deque<Character> suffix = this.suffix;
+        
         // Damit das Band nicht unendlich wird, werden blanks nur geschrieben
         // wenn wirklich nötig...
-        if (newCharacter == 'B') {
-            if (prefix.size() > 1 && prefix.peek() == 'B') {
+        if (newCharacter.charValue() == EMPTY_VALUE) {
+            if (prefix.size() > 1 && prefix.peek().charValue() == EMPTY_CHAR) {
                 prefix.pop();
             }
-            if (suffix.size() > 1 && suffix.peek() == 'B') {
+            if (suffix.size() > 1 && suffix.peek().charValue() == EMPTY_CHAR) {
                 suffix.pop();
             }
         }
@@ -89,7 +113,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von prefix
      */
-    public Stack<Character> getPrefix() {
+    public Deque<Character> getPrefix() {
         return prefix;
     }
 
@@ -98,7 +122,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von suffix
      */
-    public Stack<Character> getSuffix() {
+    public Deque<Character> getSuffix() {
         return suffix;
     }
 

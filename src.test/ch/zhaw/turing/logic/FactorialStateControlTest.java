@@ -1,5 +1,8 @@
 package ch.zhaw.turing.logic;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,9 +15,17 @@ public class FactorialStateControlTest {
 
     // < 1 Sekunde
     @Test
-    public void factorialOfZero() {
+    public void afactorialOfZero() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(0);
 
+        curFactorialStateControl.addObserver(new Observer(){
+
+            @Override
+            public void update(Observable o, Object arg) {
+                
+            }
+            
+        });
         curFactorialStateControl.doAllSteps();
 
         Assert.assertEquals(1, curFactorialStateControl.getFirstNumberAsInteger());
@@ -22,7 +33,7 @@ public class FactorialStateControlTest {
 
     // < 1 Sekunde
     @Test
-    public void factorialOfOne() {
+    public void bfactorialOfOne() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(1);
 
         curFactorialStateControl.doAllSteps();
@@ -32,7 +43,7 @@ public class FactorialStateControlTest {
 
     // < 1 Sekunde
     @Test
-    public void factorialOfTwo() {
+    public void cfactorialOfTwo() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(2);
 
         curFactorialStateControl.doAllSteps();
@@ -42,7 +53,7 @@ public class FactorialStateControlTest {
 
     // < 1 Sekunde
     @Test
-    public void factorialOfThree() {
+    public void dfactorialOfThree() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(3);
 
         curFactorialStateControl.doAllSteps();
@@ -52,7 +63,7 @@ public class FactorialStateControlTest {
 
     // < 1 Sekunde
     @Test
-    public void factorialOfFour() {
+    public void efactorialOfFour() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(4);
 
         curFactorialStateControl.doAllSteps();
@@ -62,7 +73,7 @@ public class FactorialStateControlTest {
 
     // ~1 Sekunde
     @Test
-    public void factorialOfFive() {
+    public void ffactorialOfFive() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(5);
 
         curFactorialStateControl.doAllSteps();
@@ -72,7 +83,7 @@ public class FactorialStateControlTest {
 
     // 17 Sekunden
     @Test
-    public void factorialOfSix() {
+    public void gfactorialOfSix() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(6);
 
         curFactorialStateControl.doAllSteps();
@@ -81,27 +92,25 @@ public class FactorialStateControlTest {
     }
 
     // 713.137 Sekunden ( ~11.883 Minuten)
-    // @Test
-    // public void factorialOfSeven() {
-    // FactorialStateControl curFactorialStateControl = new
-    // FactorialStateControl(7);
+    // Reto: 8 Sekunden
+    @Test
+    public void hfactorialOfSeven() {
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(7);
+
+        curFactorialStateControl.doAllSteps();
+
+        Assert.assertEquals(5040, curFactorialStateControl.getFirstNumberAsInteger());
+    }
+
     //
-    // curFactorialStateControl.doAllSteps();
-    //
-    // Assert.assertEquals(5040,
-    // curFactorialStateControl.getFirstNumberAsInteger());
-    // }
-    //
-    // @Test
-    // public void factorialOfEight() {
-    // FactorialStateControl curFactorialStateControl = new
-    // FactorialStateControl(8);
-    //
-    // curFactorialStateControl.doAllSteps();
-    //
-    // Assert.assertEquals(40320,
-    // curFactorialStateControl.getFirstNumberAsInteger());
-    // }
+    @Test
+    public void ifactorialOfEight() {
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(8);
+
+        curFactorialStateControl.doAllSteps();
+
+        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
+    }
     //
     // @Test
     // public void factorialOfTen() {
