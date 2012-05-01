@@ -10,8 +10,8 @@ import java.util.LinkedList;
  */
 public final class ReadWriteHead {
 
-    private final LinkedList<Character> prefix = new NeverNeverEnd();
-    private final LinkedList<Character> suffix = new NeverNeverEnd();
+    private final NeverNeverEnd prefix = new NeverNeverEnd();
+    private final NeverNeverEnd suffix = new NeverNeverEnd();
 
     // primitve typen um auto-boxing wenn immer möglich zu vermeiden
     static final char EMPTY_CHAR = 'B';
@@ -38,7 +38,7 @@ public final class ReadWriteHead {
         Deque<Character> suffix = this.suffix;
 
         Character curChar = this.curChar;
-        // RETOP
+        
         if (curChar.charValue() != EMPTY_CHAR) {
             prefix.push(curChar);
         }
@@ -53,12 +53,11 @@ public final class ReadWriteHead {
         if (curChar.charValue() != EMPTY_CHAR) {
             suffix.push(curChar);
         }
-
         this.curChar = prefix.pop();
     }
 
     public Character read() {
-        return curChar;
+        return this.curChar;
     }
 
     void write(Character newCharacter) {
