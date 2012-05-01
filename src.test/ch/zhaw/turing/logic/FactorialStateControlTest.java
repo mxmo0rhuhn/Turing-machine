@@ -100,6 +100,7 @@ public class FactorialStateControlTest {
         curFactorialStateControl.doAllSteps();
 
         Assert.assertEquals(5040, curFactorialStateControl.getFirstNumberAsInteger());
+        
     }
 
 

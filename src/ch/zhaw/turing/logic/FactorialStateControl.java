@@ -72,24 +72,25 @@ public class FactorialStateControl extends Observable {
 
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
+        String lastState  = curConfiguration.getCurState();
 
-        if (curConfiguration.getCurState().equals(FactorialStateControl.Q0)) {
+        if (lastState == FactorialStateControl.Q0) {
             handleQ0();
-        } else if (curConfiguration.getCurState().equals(FactorialStateControl.Q1)) {
+        } else if (lastState == FactorialStateControl.Q1) {
             handleQ1();
-        } else if (curConfiguration.getCurState().equals(FactorialStateControl.Q2)) {
+        } else if (lastState == FactorialStateControl.Q2) {
             handleQ2();
-        } else if (curConfiguration.getCurState().equals(FactorialStateControl.Q3)) {
+        } else if (lastState == FactorialStateControl.Q3) {
             handleQ3();
-        } else if (curConfiguration.getCurState().equals(FactorialStateControl.Q4)) {
+        } else if (lastState == FactorialStateControl.Q4) {
             handleQ4();
-        } else if (curConfiguration.getCurState().equals(FactorialStateControl.Q5)) {
+        } else if (lastState == FactorialStateControl.Q5) {
             handleQ5();
-        } else if (curConfiguration.getCurState().equals(FactorialStateControl.Q6)) {
+        } else if (lastState == FactorialStateControl.Q6) {
             handleQ6();
-        } else if (curConfiguration.getCurState().equals(FactorialStateControl.Q7)) {
+        } else if (lastState == FactorialStateControl.Q7) {
             handleQ7();
-        } else if (curConfiguration.getCurState().equals(FactorialStateControl.Q8)) {
+        } else if (lastState == FactorialStateControl.Q8) {
             handleQ8();
         }
 

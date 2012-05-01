@@ -67,7 +67,7 @@ public class ReadWriteHead extends Observable {
         lastDirection = DIRECTION.RIGHT;
         //sendNotification();
     }
-
+    
     public void moveLeft() {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
@@ -78,6 +78,7 @@ public class ReadWriteHead extends Observable {
         // Simulation eines unendlichen Bandes
         // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
         // blanks werden in den Stack gepushed
+        // TODO RETO: abfrage ist in 0.0003125% der fälle wahr. die obige aussage kann also wohl vernachlässigt werden??
         if (curChar.charValue() == EMPTY_CHAR && prefix.size() == 0) {
             prefix.push(EMPTY_VALUE);
         }
