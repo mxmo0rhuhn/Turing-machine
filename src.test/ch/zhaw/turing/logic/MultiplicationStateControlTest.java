@@ -1,6 +1,5 @@
 package ch.zhaw.turing.logic;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,78 +7,47 @@ import org.junit.Test;
  * Testcases fuer die Multiplikation
  * 
  * @author Max Schrimpf
- */ 
-public class MultiplicationStateControlTest {
+ */
+public class MultiplicationStateControlTest implements ZustandsUebergansListener {
+
+    private static final boolean debug = false;
+
+    private static final int ITERATIONEN = 100;
 
     @Test
-    public void zeroMultipliedByZero() {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(0, 0);
-        
-        curMultiplicationStateControl.doAllSteps();
-        
-        Assert.assertEquals(0, curMultiplicationStateControl.getFirstNumberAsInteger());
+    public void sollRichtigMultiplizieren() throws InterruptedException {
+        for (int i = 0; i < ITERATIONEN; i++) {
+            Assert.assertTrue(multiplikationKorrekt(i, i + 1));
+            if (debug) {
+                System.out.printf("TEST: %d * %d korrekt\n", i, i + 1);
+            }
+            Assert.assertTrue(multiplikationKorrekt(i + 1, i));
+            if (debug) {
+                System.out.printf("TEST: %d * %d korrekt\n", i + 1, i);
+            }
+            Assert.assertTrue(multiplikationKorrekt(i, i));
+            if (debug) {
+                System.out.printf("TEST: %d * %d korrekt\n", i, i);
+            }
+        }
     }
-    
-    @Test
-    public void zeroMultipliedByFive() {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(0, 5);
-        
-        curMultiplicationStateControl.doAllSteps();
-        
-        Assert.assertEquals(0, curMultiplicationStateControl.getFirstNumberAsInteger());
-    }
-    
-    @Test
-    public void fiveMultipliedByZero() {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(5, 0);
-        
-        curMultiplicationStateControl.doAllSteps();
-        
-        Assert.assertEquals(0, curMultiplicationStateControl.getFirstNumberAsInteger());
-    }
-    
-    @Test
-    public void oneMultipliedByOne() {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(1, 1);
-        
-        curMultiplicationStateControl.doAllSteps();
-        
-        Assert.assertEquals(1, curMultiplicationStateControl.getFirstNumberAsInteger());
-    }
-    
-    @Test
-    public void twoMultipliedByTwo() {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(2, 2);
-        
-        curMultiplicationStateControl.doAllSteps();
-        
-        Assert.assertEquals(4, curMultiplicationStateControl.getFirstNumberAsInteger());
-    }    
-    
-    @Test
-    public void fiveMultipliedByTwo() {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(5, 2);
-        
-        curMultiplicationStateControl.doAllSteps();
-        
-        Assert.assertEquals(10, curMultiplicationStateControl.getFirstNumberAsInteger());
-    }    
 
-    @Test
-    public void twoMultipliedByFive() {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(2, 5);
-        
+    private boolean multiplikationKorrekt(int a, int b) {
+        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(a, b, this);
         curMultiplicationStateControl.doAllSteps();
-        
-        Assert.assertEquals(10, curMultiplicationStateControl.getFirstNumberAsInteger());
-    }    
-
-    @Test
-    public void fiveMultipliedByFive() {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(5, 5);
-        
-        curMultiplicationStateControl.doAllSteps();
-        
-        Assert.assertEquals(25, curMultiplicationStateControl.getFirstNumberAsInteger());
+        int result = curMultiplicationStateControl.getFirstNumberAsInteger();
+        return result == a * b;
     }
+
+    @Override
+    public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes) {
+        if (!debug) {
+            return;
+        }
+        System.out.println("Neuer Zustand: " + zustand);
+        for (ReadWriteHead rwHead : tapes) {
+            System.out.println(rwHead);
+        }
+    }
+
 }

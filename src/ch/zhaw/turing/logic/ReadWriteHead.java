@@ -1,83 +1,108 @@
 package ch.zhaw.turing.logic;
 
-import java.util.Observable;
-import java.util.Stack;
+import java.util.Deque;
+import java.util.LinkedList;
 
 /**
  * Stellt ein einzelnes Band mit einer Spur und einem Lese-Schreib Kopf dar
  * 
  * @author Max Schrimpf
  */
-public class ReadWriteHead extends Observable {
+public final class ReadWriteHead {
 
     // Richtig wären Grossbuchstaben L,R,S ... der Übersicht zuliebe anders.
-    public static String LEFT = "left";
-    public static String RIGHT = "right";
-    public static String STAY = "stay";
+    public static enum DIRECTION {
+        LEFT, RIGHT, STAY
+    }
 
-    private final Stack<Character> prefix = new Stack<Character>();
-    private final Stack<Character> suffix = new Stack<Character>();
+    private final LinkedList<Character> prefix = new LinkedList<Character>();
+    private final LinkedList<Character> suffix = new LinkedList<Character>();
+    
+    // primitve typen um auto-boxing wenn immer möglich zu vermeiden
+    static final char EMPTY_CHAR = 'B';
+    static final char ZERO_CHAR = '0';
+    static final char ONE_CHAR = '1';
+    
+    // wrapper type um auto-boxing wenn immer möglich zu vermeiden
+    static final Character EMPTY_VALUE = new Character('B');
+    static final Character ZERO_VALUE = new Character('0');
+    static final Character ONE_VALUE = new Character('1');
 
-    private String lastDirection;
+
+    private DIRECTION lastDirection;
+    
     private Character curChar;
 
     /**
      * Initialisiert den Lese Schreib Kopf. Der derzeitige Buchstabe ist nun ein
      * Blank. Im Suffix ist nun auch ein Blank.
      */
-    public ReadWriteHead() {
-        curChar = 'B';
-        suffix.push('B');
-        prefix.push('B');
+    ReadWriteHead() {
+        curChar = EMPTY_VALUE;
+        suffix.push(EMPTY_VALUE);
+        prefix.push(EMPTY_VALUE);
     }
 
-    public void stay() {
-        lastDirection = ReadWriteHead.STAY;
+    void stay() {
+        lastDirection = DIRECTION.STAY;
     }
 
-    public void moveRight() {
+    void moveRight() {
+        Deque<Character> prefix = this.prefix;
+        Deque<Character> suffix = this.suffix;
+        
         prefix.push(curChar);
-        curChar = suffix.pop();
+        Character curChar = suffix.pop();
 
         // Simulation eines unendlichen Bandes
         // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
         // blanks werden in den Stack gepushed
-        if (curChar == 'B' && suffix.size() == 0) {
-            suffix.push('B');
+        if (curChar.charValue() == EMPTY_CHAR && suffix.size() == 0) {
+            suffix.push(EMPTY_VALUE);
         }
+        
+        this.curChar = curChar;
 
-        lastDirection = ReadWriteHead.RIGHT;
-        sendNotification();
+        lastDirection = DIRECTION.RIGHT;
+        //sendNotification();
     }
-
-    public void moveLeft() {
+    
+    void moveLeft() {
+        Deque<Character> prefix = this.prefix;
+        Deque<Character> suffix = this.suffix;
         suffix.push(curChar);
-        curChar = prefix.pop();
+        
+        Character curChar = prefix.pop();
 
         // Simulation eines unendlichen Bandes
         // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
         // blanks werden in den Stack gepushed
-        if (curChar == 'B' && prefix.size() == 0) {
-            prefix.push('B');
+        // TODO RETO: abfrage ist in 0.0003125% der fälle wahr. die obige aussage kann also wohl vernachlässigt werden??
+        if (curChar.charValue() == EMPTY_CHAR && prefix.size() == 0) {
+            prefix.push(EMPTY_VALUE);
         }
+        
+        this.curChar = curChar;
 
-        lastDirection = ReadWriteHead.LEFT;
-        sendNotification();
+        lastDirection = DIRECTION.LEFT;
+        //sendNotification();
     }
-
-    public Character read() {
+    
+    Character read() {
         return curChar;
     }
 
-    public void write(Character newCharacter) {
-
+    void write(Character newCharacter) {
+        Deque<Character> prefix = this.prefix;
+        Deque<Character> suffix = this.suffix;
+        
         // Damit das Band nicht unendlich wird, werden blanks nur geschrieben
         // wenn wirklich nötig...
-        if (newCharacter == 'B') {
-            if (prefix.size() > 1 && prefix.peek() == 'B') {
+        if (newCharacter.charValue() == EMPTY_VALUE) {
+            if (prefix.size() > 1 && prefix.peek().charValue() == EMPTY_CHAR) {
                 prefix.pop();
             }
-            if (suffix.size() > 1 && suffix.peek() == 'B') {
+            if (suffix.size() > 1 && suffix.peek().charValue() == EMPTY_CHAR) {
                 suffix.pop();
             }
         }
@@ -89,7 +114,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von prefix
      */
-    public Stack<Character> getPrefix() {
+    Deque<Character> getPrefix() {
         return prefix;
     }
 
@@ -98,7 +123,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von suffix
      */
-    public Stack<Character> getSuffix() {
+    Deque<Character> getSuffix() {
         return suffix;
     }
 
@@ -107,12 +132,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von lastDirection
      */
-    public String getLastDirection() {
+    DIRECTION getLastDirection() {
         return lastDirection;
-    }
-
-    private void sendNotification() {
-        setChanged();
-        notifyObservers();
     }
 }
