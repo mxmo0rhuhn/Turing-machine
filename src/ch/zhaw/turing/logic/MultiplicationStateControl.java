@@ -245,6 +245,9 @@ public class MultiplicationStateControl extends Observable {
     }
 
     private String handleQ6(char fstTapeChar, char sndTapeChar) {
+        ReadWriteHead firstRSH = this.firstRSH;
+        ReadWriteHead secondRSH = this.secondRSH;
+        
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveLeft();
 
@@ -358,6 +361,9 @@ public class MultiplicationStateControl extends Observable {
     }
 
     private String handleQ1(char fstTapeChar, char sndTapeChar) {
+        ReadWriteHead firstRSH = this.firstRSH;
+        ReadWriteHead secondRSH = this.secondRSH;
+        
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveRight();
 
