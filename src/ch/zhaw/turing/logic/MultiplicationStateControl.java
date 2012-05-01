@@ -178,13 +178,9 @@ public class MultiplicationStateControl implements TuringMachine {
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q9;
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.moveLeft();
-
-            secondRSH.stay();
 
             return MultiplicationStateControl.Q9;
         } else if (fstTapeChar == EMPTY_CHAR) {
@@ -216,9 +212,6 @@ public class MultiplicationStateControl implements TuringMachine {
 
             return MultiplicationStateControl.Q8;
         } else if (sndTapeChar == EMPTY_CHAR) {
-            firstRSH.stay();
-
-            secondRSH.stay();
 
             return MultiplicationStateControl.Q10;
         } else {
@@ -232,19 +225,13 @@ public class MultiplicationStateControl implements TuringMachine {
             firstRSH.write(EMPTY_VALUE);
             firstRSH.moveRight();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q7;
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.write(EMPTY_VALUE);
             firstRSH.moveRight();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q7;
         } else if (fstTapeChar == EMPTY_CHAR) {
-            firstRSH.stay();
-
             secondRSH.moveLeft();
 
             return MultiplicationStateControl.Q8;
@@ -256,18 +243,13 @@ public class MultiplicationStateControl implements TuringMachine {
 
     private String handleQ6(char fstTapeChar, char sndTapeChar) {
         ReadWriteHead firstRSH = this.firstRSH;
-        ReadWriteHead secondRSH = this.secondRSH;
 
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q6;
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.moveRight();
-
-            secondRSH.stay();
 
             return MultiplicationStateControl.Q0;
         } else {
@@ -280,19 +262,13 @@ public class MultiplicationStateControl implements TuringMachine {
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q6;
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q5;
         } else if (fstTapeChar == EMPTY_CHAR) {
             firstRSH.moveRight();
-
-            secondRSH.stay();
 
             return MultiplicationStateControl.Q7;
         } else {
@@ -305,13 +281,9 @@ public class MultiplicationStateControl implements TuringMachine {
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q4;
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.moveLeft();
-
-            secondRSH.stay();
 
             return MultiplicationStateControl.Q5;
         } else {
@@ -331,8 +303,6 @@ public class MultiplicationStateControl implements TuringMachine {
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q4;
         } else {
             dumpTape1Exeption(MultiplicationStateControl.Q3, fstTapeChar);
@@ -351,8 +321,6 @@ public class MultiplicationStateControl implements TuringMachine {
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.moveLeft();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q9;
         } else {
             dumpTape1Exeption(MultiplicationStateControl.Q2, fstTapeChar);
@@ -362,18 +330,13 @@ public class MultiplicationStateControl implements TuringMachine {
 
     private String handleQ1(char fstTapeChar, char sndTapeChar) {
         ReadWriteHead firstRSH = this.firstRSH;
-        ReadWriteHead secondRSH = this.secondRSH;
 
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveRight();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q1;
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.moveRight();
-
-            secondRSH.stay();
 
             return MultiplicationStateControl.Q2;
         } else {
@@ -387,13 +350,8 @@ public class MultiplicationStateControl implements TuringMachine {
             firstRSH.write(ONE_VALUE);
             firstRSH.moveRight();
 
-            secondRSH.stay();
-
             return MultiplicationStateControl.Q1;
         } else if (fstTapeChar == ONE_CHAR) {
-            firstRSH.stay();
-
-            secondRSH.stay();
 
             return MultiplicationStateControl.Q7;
         } else {

@@ -148,17 +148,12 @@ public class FactorialStateControl implements TuringMachine {
 
             return FactorialStateControl.Q6;
         } else if (sndTapeChar == ONE_CHAR) {
-            firstRSH.stay();
 
             secondRSH.write(EMPTY_VALUE);
             secondRSH.moveLeft();
 
             return FactorialStateControl.Q6;
         } else if (sndTapeChar == EMPTY_CHAR) {
-            firstRSH.stay();
-
-            secondRSH.stay();
-
             return FactorialStateControl.Q7;
         } else {
             dumpTape2Exeption(FactorialStateControl.Q6, sndTapeChar);
@@ -169,8 +164,6 @@ public class FactorialStateControl implements TuringMachine {
     private String handleQ5(char fstTapeChar, char sndTapeChar) {
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveRight();
-
-            secondRSH.stay();
 
             return FactorialStateControl.Q5;
         } else if (fstTapeChar == EMPTY_CHAR) {
@@ -195,14 +188,10 @@ public class FactorialStateControl implements TuringMachine {
         }
 
         if (sndTapeChar == ZERO_CHAR) {
-            firstRSH.stay();
-
             secondRSH.moveLeft();
 
             return FactorialStateControl.Q4;
         } else if (sndTapeChar == ONE_CHAR) {
-            firstRSH.stay();
-
             secondRSH.moveLeft();
 
             return FactorialStateControl.Q4;
@@ -233,8 +222,6 @@ public class FactorialStateControl implements TuringMachine {
                 firstRSH.write(EMPTY_VALUE);
                 firstRSH.moveRight();
 
-                secondRSH.stay();
-
                 return FactorialStateControl.Q5;
             } else {
                 dumpTape1Exeption(FactorialStateControl.Q4, fstTapeChar);
@@ -255,7 +242,6 @@ public class FactorialStateControl implements TuringMachine {
 
             return FactorialStateControl.Q3;
         } else if (fstTapeChar == EMPTY_CHAR) {
-            firstRSH.stay();
 
             secondRSH.write(ONE_VALUE);
             secondRSH.moveLeft();
@@ -276,8 +262,6 @@ public class FactorialStateControl implements TuringMachine {
 
             return FactorialStateControl.Q3;
         } else if (fstTapeChar == EMPTY_CHAR) {
-            firstRSH.stay();
-
             secondRSH.moveLeft();
 
             return FactorialStateControl.Q6;
@@ -323,9 +307,6 @@ public class FactorialStateControl implements TuringMachine {
             return FactorialStateControl.Q1;
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.write(ZERO_VALUE);
-            firstRSH.stay();
-
-            secondRSH.stay();
 
             return FactorialStateControl.Q8;
         } else {

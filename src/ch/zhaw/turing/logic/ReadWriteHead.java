@@ -10,13 +10,8 @@ import java.util.LinkedList;
  */
 public final class ReadWriteHead {
 
-    // Richtig wären Grossbuchstaben L,R,S ... der Übersicht zuliebe anders.
-    public static enum DIRECTION {
-        LEFT, RIGHT, STAY
-    }
-
-    private final LinkedList<Character> prefix = new LinkedList<Character>();
-    private final LinkedList<Character> suffix = new LinkedList<Character>();
+    private final LinkedList<Character> prefix = new NeverNeverEnd();
+    private final LinkedList<Character> suffix = new NeverNeverEnd();
 
     // primitve typen um auto-boxing wenn immer möglich zu vermeiden
     static final char EMPTY_CHAR = 'B';
@@ -28,8 +23,6 @@ public final class ReadWriteHead {
     static final Character ZERO_VALUE = new Character('0');
     static final Character ONE_VALUE = new Character('1');
 
-    private DIRECTION lastDirection;
-
     private Character curChar;
 
     /**
@@ -38,53 +31,30 @@ public final class ReadWriteHead {
      */
     ReadWriteHead() {
         curChar = EMPTY_VALUE;
-        suffix.push(EMPTY_VALUE);
-        prefix.push(EMPTY_VALUE);
-    }
-
-    void stay() {
-        lastDirection = DIRECTION.STAY;
     }
 
     void moveRight() {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
 
-        prefix.push(curChar);
-        Character curChar = suffix.pop();
-
-        // Simulation eines unendlichen Bandes
-        // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
-        // blanks werden in den Stack gepushed
-        if (curChar.charValue() == EMPTY_CHAR && suffix.size() == 0) {
-            suffix.push(EMPTY_VALUE);
+        Character curChar = this.curChar;
+        // RETOP
+        if (curChar.charValue() != EMPTY_CHAR) {
+            prefix.push(curChar);
         }
-
-        this.curChar = curChar;
-
-        lastDirection = DIRECTION.RIGHT;
-        // sendNotification();
+        this.curChar = suffix.pop();
     }
 
     void moveLeft() {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
-        suffix.push(curChar);
 
-        Character curChar = prefix.pop();
-
-        // Simulation eines unendlichen Bandes
-        // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
-        // blanks werden in den Stack gepushed
-        // TODO RETO: abfrage ist in 0.0003125% der fälle wahr. die obige aussage kann also wohl vernachlässigt werden??
-        if (curChar.charValue() == EMPTY_CHAR && prefix.size() == 0) {
-            prefix.push(EMPTY_VALUE);
+        Character curChar = this.curChar;
+        if (curChar.charValue() != EMPTY_CHAR) {
+            suffix.push(curChar);
         }
 
-        this.curChar = curChar;
-
-        lastDirection = DIRECTION.LEFT;
-        // sendNotification();
+        this.curChar = prefix.pop();
     }
 
     public Character read() {
@@ -92,19 +62,6 @@ public final class ReadWriteHead {
     }
 
     void write(Character newCharacter) {
-        Deque<Character> prefix = this.prefix;
-        Deque<Character> suffix = this.suffix;
-
-        // Damit das Band nicht unendlich wird, werden blanks nur geschrieben
-        // wenn wirklich nötig...
-        if (newCharacter.charValue() == EMPTY_VALUE) {
-            if (prefix.size() > 1 && prefix.peek().charValue() == EMPTY_CHAR) {
-                prefix.pop();
-            }
-            if (suffix.size() > 1 && suffix.peek().charValue() == EMPTY_CHAR) {
-                suffix.pop();
-            }
-        }
         this.curChar = newCharacter;
     }
 
@@ -126,15 +83,6 @@ public final class ReadWriteHead {
         return this.suffix.toArray(new Character[0]);
     }
 
-    /**
-     * Gibt den Wert des Feldes lastDirection zurück
-     * 
-     * @return Der Wert von lastDirection
-     */
-    DIRECTION getLastDirection() {
-        return lastDirection;
-    }
-
     public int getResultat() {
         int i = 0;
 
@@ -152,4 +100,24 @@ public final class ReadWriteHead {
 
         return i;
     }
+}
+
+class NeverNeverEnd extends LinkedList<Character> {
+
+    @Override
+    public Character pop() {
+        if (isEmpty()) {
+            return ReadWriteHead.EMPTY_VALUE;
+        } else {
+            return super.pop();
+        }
+    }
+    
+    @Override
+    public Character peek() {
+        throw new UnsupportedOperationException("implement me");
+    }
+
+    private static final long serialVersionUID = 1819116069884717047L;
+
 }
