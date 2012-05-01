@@ -88,37 +88,6 @@ public class ReadWriteHead extends Observable {
         //sendNotification();
     }
     
-    public void moveLeftAndWrite(Character newCharacter) {
-        Deque<Character> prefix = this.prefix;
-        Deque<Character> suffix = this.suffix;
-        
-        // Damit das Band nicht unendlich wird, werden blanks nur geschrieben
-        // wenn wirklich nötig...
-        if (newCharacter.charValue() == EMPTY_VALUE) {
-            if (prefix.size() > 1 && prefix.peek().charValue() == EMPTY_CHAR) {
-                prefix.pop();
-            }
-            if (suffix.size() > 1 && suffix.peek().charValue() == EMPTY_CHAR) {
-                suffix.pop();
-            }
-        }
-        
-        suffix.push(newCharacter);
-        newCharacter = prefix.pop();
-
-        // Simulation eines unendlichen Bandes
-        // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
-        // blanks werden in den Stack gepushed
-        if (newCharacter.charValue() == EMPTY_CHAR && prefix.size() == 0) {
-            prefix.push(EMPTY_VALUE);
-        }
-        
-        this.curChar = newCharacter;
-
-        lastDirection = DIRECTION.LEFT;
-        //sendNotification();
-    }
-
     public Character read() {
         return curChar;
     }

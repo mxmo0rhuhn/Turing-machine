@@ -292,7 +292,6 @@ public class FactorialStateControl extends Observable {
         } else if (firstTapeCharacter == ONE_VALUE.charValue()) {
             firstRSH.write(EMPTY_VALUE);
             firstRSH.moveLeft();
-            //firstRSH.moveLeftAndWrite(EMPTY_VALUE);
 
             secondRSH.write(ONE_VALUE);
             secondRSH.moveRight();

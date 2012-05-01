@@ -102,7 +102,7 @@ public class FactorialStateControlTest {
         Assert.assertEquals(5040, curFactorialStateControl.getFirstNumberAsInteger());
     }
 
-    //
+
     @Test
     public void ifactorialOfEight() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(8);
@@ -111,6 +111,16 @@ public class FactorialStateControlTest {
 
         Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
     }
+    
+    @Test
+    public void ifactorialOfNine() {
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(9);
+
+        curFactorialStateControl.doAllSteps();
+
+        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
+    }
+    
     //
     // @Test
     // public void factorialOfTen() {
