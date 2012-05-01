@@ -134,4 +134,22 @@ public final class ReadWriteHead {
     DIRECTION getLastDirection() {
         return lastDirection;
     }
+
+    public int getResultat() {
+        int i = 0;
+
+        moveLeft();
+
+        while (read() != 'B') {
+            moveLeft();
+        }
+
+        moveRight();
+        while (read() == '0') {
+            moveRight();
+            i++;
+        }
+
+        return i;
+    }
 }

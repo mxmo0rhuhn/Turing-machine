@@ -108,14 +108,18 @@ public class MultiplicationStateControl implements TuringMachine {
 
         String curState = MultiplicationStateControl.Q0;
 
-        while (curState != MultiplicationStateControl.Q10) {
+        while (!akzeptierterZustand(curState)) {
             curState = doStep(curState, fstTapeChar, sndTapeChar);
 
-            this.listener.inNeuenZustandGewechselt(curState, tapes);
+            this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptierterZustand(curState));
 
             fstTapeChar = tapes[0].read().charValue();
             sndTapeChar = tapes[1].read().charValue();
         }
+    }
+
+    private static boolean akzeptierterZustand(String zustand) {
+        return zustand == MultiplicationStateControl.Q10;
     }
 
     public String doStep(String lastState, char fstTapeChar, char sndTapeChar) {
@@ -406,13 +410,7 @@ public class MultiplicationStateControl implements TuringMachine {
         System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:" + fstTapeChar);
     }
 
-    /**
-     * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale. Der Lese-Schreibkopf des ersten Bandes
-     * steht nach dieser Operation hinter der letzten Ziffer der Zahl.
-     * 
-     * @return das Ergebnis der Rechnung als Decimalzahl.
-     */
-    public int getFirstNumberAsInteger() {
+    int getFirstNumberAsInteger() {
         int i = 0;
 
         firstRSH.moveLeft();

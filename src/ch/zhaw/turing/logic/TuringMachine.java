@@ -4,6 +4,4 @@ public interface TuringMachine {
     
     public void doAllSteps();
     
-    public int getFirstNumberAsInteger();
-
 }

@@ -1,5 +1,6 @@
 package ch.zhaw.turing.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,10 +11,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -40,15 +43,30 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
 
     private final JFrame frame;
 
+    private final JPanel infoPanel;
+
+    private JLabel infoLabel = new JLabel("Turing Maschiin");
+
     public MaschineView() {
         this.frame = new JFrame("Turning Maschine");
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.frame.setJMenuBar(createMenu());
+        this.infoPanel = createInfoPanel();
 
         this.frame.setLocation(100, 0);
         this.frame.setVisible(true);
-        this.frame.setSize(730, 270);
+        this.frame.setSize(730, 300);
+    }
+
+    private JPanel createInfoPanel() {
+        JPanel panel = new JPanel();
+        panel.add(infoLabel);
+
+        // most ugly ever. who gives a shit.
+        this.frame.getContentPane().setLayout(new BorderLayout());
+        this.frame.getContentPane().add(panel);
+        return panel;
     }
 
     private JMenuBar createMenu() {
@@ -132,6 +150,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     private TuringMachine fakultaet() {
         String eingabe = JOptionPane.showInputDialog("Geben Sie eine Zahl ein: ");
         try {
+            this.infoLabel.setText(String.format("Der Gerät berechnet eben %s!", eingabe.trim()));
             return new FactorialStateControl(Integer.parseInt(eingabe.trim()), this);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(frame, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -143,8 +162,10 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         String eingabe = JOptionPane.showInputDialog("Geben Sie zwei Zahlen ein (z.B. '13 10'): ");
         try {
             String[] parts = eingabe.split(" ");
-            return new MultiplicationStateControl(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()),
-                    this);
+            String zahl1 = parts[0].trim();
+            String zahl2 = parts[1].trim();
+            this.infoLabel.setText(String.format("Na dann, lass uns %s mal %s rechnen..", zahl1, zahl2));
+            return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), this);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(frame, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
             return null;
@@ -152,7 +173,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     }
 
     @Override
-    public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes) {
+    public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes, boolean akzeptiert) {
         sollenWirMalPauseMachen();
         debug("Neuer Zustand: " + zustand);
 
@@ -160,7 +181,13 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         for (int i = 0; i < tapes.length; i++) {
             bandInhalte[i] = get30Chars(tapes[i].getPrefix(), tapes[i].read(), tapes[i].getSuffix());
         }
-        fireUpdate(bandInhalte);
+        
+        String msg = null;
+        if (akzeptiert) {
+            msg = "Das Resultat ist: " + tapes[0].getResultat();
+        }
+        
+        fireUpdate(bandInhalte, msg);
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException e) {
@@ -170,7 +197,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
 
     static Character[] get30Chars(Character[] prefix, Character curChar, Character[] suffix) {
         Character[] resultat = new Character[31];
-        
+
         List<Character> reverse = Arrays.asList(prefix);
         Collections.reverse(reverse);
         prefix = reverse.toArray(new Character[0]);
@@ -209,15 +236,22 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         }
     }
 
-    private void fireUpdate(final Character[][] bandInhalte) {
+    private void fireUpdate(final Character[][] bandInhalte, final String resultat) {
+
         paintService.execute(new Runnable() {
             @Override
             public void run() {
                 Container c = frame.getContentPane();
                 c.removeAll();
                 MaschinePanel mp = new MaschinePanel(bandInhalte);
-                c.add(mp);
+                c.setLayout(new BorderLayout());
+                c.add(mp, BorderLayout.CENTER);
+                c.add(infoPanel, BorderLayout.NORTH);
 
+                if (resultat != null) {
+                    infoLabel.setText(resultat);
+                }
+                
                 c.validate();
                 c.repaint();
             }
