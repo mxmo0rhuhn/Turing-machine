@@ -136,9 +136,4 @@ public class ReadWriteHead extends Observable {
     public DIRECTION getLastDirection() {
         return lastDirection;
     }
-
-    private void sendNotification() {
-        setChanged();
-        notifyObservers();
-    }
 }

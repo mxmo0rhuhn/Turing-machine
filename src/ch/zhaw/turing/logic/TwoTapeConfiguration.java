@@ -7,7 +7,7 @@ package ch.zhaw.turing.logic;
  */
 public class TwoTapeConfiguration {
 
-    private final String curState ;
+    private final String curState;
     private final Character firstTapeCharacter;
     private final Character secondTapeCharacter;
 

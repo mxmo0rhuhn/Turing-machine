@@ -22,8 +22,6 @@ public class FactorialStateControl extends Observable {
 
     private TwoTapeConfiguration curConfiguration;
 
-    private String curState;
-
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
     private ReadWriteHead thirdRSH;
@@ -54,56 +52,59 @@ public class FactorialStateControl extends Observable {
         } while (firstRSH.read() != 'B');
 
         firstRSH.moveRight();
-        curState = FactorialStateControl.Q0;
-        curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
+        curConfiguration = new TwoTapeConfiguration(FactorialStateControl.Q0, firstRSH.read(), secondRSH.read());
     }
 
     public void doAllSteps() {
-        while ((curState != FactorialStateControl.Q8)
-                && (curState != FactorialStateControl.Q7)) {
-            doStep();
+        // Startzustand
+        String state = FactorialStateControl.Q0;
+        
+        while ((state != FactorialStateControl.Q8)
+                && (state != FactorialStateControl.Q7)) {
+            state = doStep(state);
         }
 
         // System.out.println("Ergebnis: " + getFirstNumberAsInteger());
     }
 
-    public void doStep() {
+    public String doStep(String lastState) {
         // printCurrentState();
 
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
-        String lastState  = curConfiguration.getCurState();
+        String nextState;
 
         if (lastState == FactorialStateControl.Q0) {
-            handleQ0();
+            nextState = handleQ0();
         } else if (lastState == FactorialStateControl.Q1) {
-            handleQ1();
+            nextState = handleQ1();
         } else if (lastState == FactorialStateControl.Q2) {
-            handleQ2();
+            nextState = handleQ2();
         } else if (lastState == FactorialStateControl.Q3) {
-            handleQ3();
+            nextState = handleQ3();
         } else if (lastState == FactorialStateControl.Q4) {
-            handleQ4();
+            nextState = handleQ4();
         } else if (lastState == FactorialStateControl.Q5) {
-            handleQ5();
+            nextState = handleQ5();
         } else if (lastState == FactorialStateControl.Q6) {
-            handleQ6();
+            nextState = handleQ6();
         } else if (lastState == FactorialStateControl.Q7) {
-            handleQ7();
+            nextState = handleQ7();
         } else if (lastState == FactorialStateControl.Q8) {
-            handleQ8();
+            nextState = handleQ8();
+        } else {
+            throw new IllegalStateException(lastState + " existiert nicht!");
         }
 
-        if (!curState.equals(curConfiguration.getCurState())) {
-            setChanged();
-            notifyObservers();
-        }
+        // man kann doch auch etwas machen und im gleichen zustand bleiben? das wollen die leute da draussen auch wissen ;)
+        //if (!curState.equals(curConfiguration.getCurState())) { setChanged(); notifyObservers(); }
 
-        curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
+        curConfiguration = new TwoTapeConfiguration(nextState, firstRSH.read(), secondRSH.read());
         // printCurrentStateWithDirection();
+        return nextState;
     }
 
-    private void handleQ8() {
+    private String handleQ8() {
         if (!(curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape1Exeption();
         }
@@ -111,9 +112,10 @@ public class FactorialStateControl extends Observable {
         if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
+        return FactorialStateControl.Q8;
     }
 
-    private void handleQ7() {
+    private String handleQ7() {
         if (!(curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape1Exeption();
         }
@@ -121,9 +123,10 @@ public class FactorialStateControl extends Observable {
         if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape2Exeption();
         }
+        return FactorialStateControl.Q7;
     }
 
-    private void handleQ6() {
+    private String handleQ6() {
         ReadWriteHead firstRSH = this.firstRSH;
         ReadWriteHead secondRSH = this.secondRSH;
         TwoTapeConfiguration curConfiguration = this.curConfiguration;
@@ -139,49 +142,49 @@ public class FactorialStateControl extends Observable {
             secondRSH.write(EMPTY_VALUE);
             secondRSH.moveLeft();
 
-            curState = FactorialStateControl.Q6;
+            return FactorialStateControl.Q6;
         } else if (curConfiguration.getSecondTapeCharacter().charValue() == ONE_CHAR) {
             firstRSH.stay();
 
             secondRSH.write(EMPTY_VALUE);
             secondRSH.moveLeft();
 
-            curState = FactorialStateControl.Q6;
+            return FactorialStateControl.Q6;
         } else if (curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.stay();
 
             secondRSH.stay();
 
-            curState = FactorialStateControl.Q7;
+            return FactorialStateControl.Q7;
         } else {
             dumpTape2Exeption();
+            return null;// FIXME richtige excpetion werfen? (runtime)
         }
     }
 
-    private void handleQ5() {
+    private String handleQ5() {
         if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
             firstRSH.moveRight();
 
             secondRSH.stay();
 
-            curState = FactorialStateControl.Q5;
+            return FactorialStateControl.Q5;
         } else if (curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.write(ONE_VALUE);
             secondRSH.moveRight();
 
-            curState = FactorialStateControl.Q2;
+            return FactorialStateControl.Q2;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ4() {
+    private String handleQ4() {
 
         if (!(curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR)) {
             dumpTape1Exeption();
@@ -192,13 +195,13 @@ public class FactorialStateControl extends Observable {
 
             secondRSH.moveLeft();
 
-            curState = FactorialStateControl.Q4;
+            return FactorialStateControl.Q4;
         } else if (curConfiguration.getSecondTapeCharacter().charValue() == ONE_CHAR) {
             firstRSH.stay();
 
             secondRSH.moveLeft();
 
-            curState = FactorialStateControl.Q4;
+            return FactorialStateControl.Q4;
         } else if (curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.moveRight();
 
@@ -209,7 +212,7 @@ public class FactorialStateControl extends Observable {
                     thirdRSH);
             myMultiplicationStateControl.doAllSteps();
 
-            curConfiguration = new TwoTapeConfiguration(curState, firstRSH.read(), secondRSH.read());
+            curConfiguration = new TwoTapeConfiguration(FactorialStateControl.Q4, firstRSH.read(), secondRSH.read());
 
             if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
                 firstRSH.write(EMPTY_VALUE);
@@ -217,68 +220,66 @@ public class FactorialStateControl extends Observable {
 
                 secondRSH.stay();
 
-                curState = FactorialStateControl.Q5;
+                return FactorialStateControl.Q5;
             } else {
                 dumpTape1Exeption();
+                return null;
             }
 
-            if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
-                dumpTape2Exeption();
-            }
+            //if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
 
         } else {
             dumpTape2Exeption();
+                return null;
         }
     }
 
-    private void handleQ3() {
+    private String handleQ3() {
         if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            curState = FactorialStateControl.Q3;
+            return FactorialStateControl.Q3;
         } else if (curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.stay();
 
             secondRSH.write(ONE_VALUE);
             secondRSH.moveLeft();
 
-            curState = FactorialStateControl.Q4;
+            return FactorialStateControl.Q4;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ2() {
+    private String handleQ2() {
         if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            curState = FactorialStateControl.Q3;
+            return FactorialStateControl.Q3;
         } else if (curConfiguration.getFirstTapeCharacter().charValue() == EMPTY_CHAR) {
             firstRSH.stay();
 
             secondRSH.moveLeft();
 
-            curState = FactorialStateControl.Q6;
+            return FactorialStateControl.Q6;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void handleQ1() {
+    private String handleQ1() {
         ReadWriteHead firstRSH = this.firstRSH;
         ReadWriteHead secondRSH = this.secondRSH;
         char firstTapeCharacter = this.curConfiguration.getFirstTapeCharacter().charValue();
@@ -289,7 +290,7 @@ public class FactorialStateControl extends Observable {
             secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            curState = FactorialStateControl.Q1;
+            return FactorialStateControl.Q1;
         } else if (firstTapeCharacter == ONE_VALUE.charValue()) {
             firstRSH.write(EMPTY_VALUE);
             firstRSH.moveLeft();
@@ -297,9 +298,10 @@ public class FactorialStateControl extends Observable {
             secondRSH.write(ONE_VALUE);
             secondRSH.moveRight();
 
-            curState = FactorialStateControl.Q2;
+            return FactorialStateControl.Q2;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
         // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
@@ -308,7 +310,7 @@ public class FactorialStateControl extends Observable {
         // Reto optimiert: Wir haben doch genügend Unit Tests um sicherzustellen, dass da nicht schief geht?
     }
 
-    private void handleQ0() {
+    private String handleQ0() {
         if (curConfiguration.getFirstTapeCharacter().charValue() == ZERO_CHAR) {
             firstRSH.write(EMPTY_VALUE);
             firstRSH.moveRight();
@@ -316,21 +318,20 @@ public class FactorialStateControl extends Observable {
             secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            curState = FactorialStateControl.Q1;
+            return FactorialStateControl.Q1;
         } else if (curConfiguration.getFirstTapeCharacter().charValue() == ONE_CHAR) {
             firstRSH.write(ZERO_VALUE);
             firstRSH.stay();
 
             secondRSH.stay();
 
-            curState = FactorialStateControl.Q8;
+            return FactorialStateControl.Q8;
         } else {
             dumpTape1Exeption();
+            return null;
         }
 
-        if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) {
-            dumpTape2Exeption();
-        }
+        //if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
     private void dumpTape2Exeption() {
