@@ -56,18 +56,20 @@ public class FactorialStateControl implements TuringMachine {
     }
 
     public void doAllSteps() {
-        ReadWriteHead firstRSH = this.firstRSH;
-        ReadWriteHead secondRSH = this.secondRSH;
+        ReadWriteHead[] tapes = new ReadWriteHead[]{this.firstRSH, this.secondRSH};
 
         // Startzustand
         String curState = FactorialStateControl.Q0;
-        Character fstTapeChar = firstRSH.read().charValue();
-        Character sndTapeChar = secondRSH.read().charValue();
+        Character fstTapeChar = tapes[0].read().charValue();
+        Character sndTapeChar = tapes[1].read().charValue();
 
         while ((curState != FactorialStateControl.Q8) && (curState != FactorialStateControl.Q7)) {
             curState = doStep(curState, fstTapeChar, sndTapeChar);
-            fstTapeChar = firstRSH.read().charValue();
-            sndTapeChar = secondRSH.read().charValue();
+            
+            this.listener.inNeuenZustandGewechselt(curState, tapes);
+            
+            fstTapeChar = tapes[0].read().charValue();
+            sndTapeChar = tapes[1].read().charValue();
         }
     }
 

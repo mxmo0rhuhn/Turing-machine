@@ -23,9 +23,9 @@ public class MultiplicationStateControl implements TuringMachine {
 
     private final ReadWriteHead firstRSH;
     private final ReadWriteHead secondRSH;
-    
+
     private final ZustandsUebergansListener listener;
-    
+
     /**
      * Erstellt eine neue Zustandssteuerung für die Multiplikation und initialisiert das Band. Die Position des
      * LS-Kopfes ist danach genau auf dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben erstellt.
@@ -38,9 +38,9 @@ public class MultiplicationStateControl implements TuringMachine {
     public MultiplicationStateControl(int multiplikator, int multiplikant, ZustandsUebergansListener listener) {
         this.firstRSH = new ReadWriteHead();
         this.secondRSH = new ReadWriteHead();
-        
+
         this.listener = listener;
-        
+
         setUpTape(multiplikator, multiplikant);
     }
 
@@ -56,10 +56,11 @@ public class MultiplicationStateControl implements TuringMachine {
      *            der zweite Lese-Schreibkopf der Maschine
      * 
      */
-    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH, ZustandsUebergansListener listener) {
+    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH,
+            ZustandsUebergansListener listener) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
-        
+
         this.listener = listener;
     }
 
@@ -99,9 +100,9 @@ public class MultiplicationStateControl implements TuringMachine {
      * Führt alle Schritte der Multiplikation aus. Am Ende der Berechnung steht der Lese- Schreibkopf des oberen Bandes
      * hinter der letzten Stelle der multiplizierten Zahl.
      */
-    public void doAllSteps() {        
-        ReadWriteHead[] tapes = new ReadWriteHead[]{this.firstRSH, this.secondRSH};
-        
+    public void doAllSteps() {
+        ReadWriteHead[] tapes = new ReadWriteHead[] { this.firstRSH, this.secondRSH };
+
         Character fstTapeChar = tapes[0].read().charValue();
         Character sndTapeChar = tapes[1].read().charValue();
 
@@ -109,9 +110,9 @@ public class MultiplicationStateControl implements TuringMachine {
 
         while (curState != MultiplicationStateControl.Q10) {
             curState = doStep(curState, fstTapeChar, sndTapeChar);
-            
+
             this.listener.inNeuenZustandGewechselt(curState, tapes);
-            
+
             fstTapeChar = tapes[0].read().charValue();
             sndTapeChar = tapes[1].read().charValue();
         }
