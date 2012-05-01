@@ -20,8 +20,6 @@ public class FactorialStateControl extends Observable {
     public static final String Q7 = "Q7";
     public static final String Q8 = "Q8";
 
-    private TwoTapeConfiguration curConfiguration; // wird immer null sein
-
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
     private ReadWriteHead thirdRSH;
@@ -101,33 +99,27 @@ public class FactorialStateControl extends Observable {
             throw new IllegalStateException(lastState + " existiert nicht!");
         }
 
-        // man kann doch auch etwas machen und im gleichen zustand bleiben? das wollen die leute da draussen auch wissen
-        // ;)
-        // if (!curState.equals(curConfiguration.getCurState())) { setChanged(); notifyObservers(); }
-        
-        // FIXME ein observer sollte allenfalls printen, aber nicht das program selbst
-        // printCurrentStateWithDirection();
         return nextState;
     }
 
     private String handleQ8(char fstTapeChar, char sndTapeChar) {
         if (!(fstTapeChar == EMPTY_CHAR)) {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q8, fstTapeChar);
         }
 
         if (!(sndTapeChar == EMPTY_CHAR)) {
-            dumpTape2Exeption();
+            dumpTape2Exeption(FactorialStateControl.Q8, sndTapeChar);
         }
         return FactorialStateControl.Q8;
     }
 
     private String handleQ7(char fstTapeChar, char sndTapeChar) {
         if (!(fstTapeChar == EMPTY_CHAR)) {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q7, fstTapeChar);
         }
 
         if (!(sndTapeChar == EMPTY_CHAR)) {
-            dumpTape2Exeption();
+            dumpTape2Exeption(FactorialStateControl.Q7, sndTapeChar);
         }
         return FactorialStateControl.Q7;
     }
@@ -137,7 +129,7 @@ public class FactorialStateControl extends Observable {
         ReadWriteHead secondRSH = this.secondRSH;
 
         if (!(fstTapeChar == EMPTY_CHAR)) {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q6, fstTapeChar);
         }
 
         if (sndTapeChar == ZERO_CHAR) {
@@ -162,7 +154,7 @@ public class FactorialStateControl extends Observable {
 
             return FactorialStateControl.Q7;
         } else {
-            dumpTape2Exeption();
+            dumpTape2Exeption(FactorialStateControl.Q6, sndTapeChar);
             return null;// FIXME richtige excpetion werfen? (runtime)
         }
     }
@@ -182,7 +174,7 @@ public class FactorialStateControl extends Observable {
 
             return FactorialStateControl.Q2;
         } else {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q5, fstTapeChar);
             return null;
         }
 
@@ -194,7 +186,7 @@ public class FactorialStateControl extends Observable {
         ReadWriteHead secondRSH = this.secondRSH;
 
         if (!(fstTapeChar == EMPTY_CHAR)) {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q4, fstTapeChar);
         }
 
         if (sndTapeChar == ZERO_CHAR) {
@@ -227,14 +219,14 @@ public class FactorialStateControl extends Observable {
 
                 return FactorialStateControl.Q5;
             } else {
-                dumpTape1Exeption();
+                dumpTape1Exeption(FactorialStateControl.Q4, fstTapeChar);
                 return null;
             }
 
             // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
 
         } else {
-            dumpTape2Exeption();
+            dumpTape2Exeption(FactorialStateControl.Q4, sndTapeChar);
             return null;
         }
     }
@@ -255,7 +247,7 @@ public class FactorialStateControl extends Observable {
 
             return FactorialStateControl.Q4;
         } else {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q3, fstTapeChar);
             return null;
         }
 
@@ -277,7 +269,7 @@ public class FactorialStateControl extends Observable {
 
             return FactorialStateControl.Q6;
         } else {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q2, fstTapeChar);
             return null;
         }
 
@@ -304,7 +296,7 @@ public class FactorialStateControl extends Observable {
 
             return FactorialStateControl.Q2;
         } else {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q1, fstTapeChar);
             return null;
         }
 
@@ -331,21 +323,21 @@ public class FactorialStateControl extends Observable {
 
             return FactorialStateControl.Q8;
         } else {
-            dumpTape1Exeption();
+            dumpTape1Exeption(FactorialStateControl.Q0, fstTapeChar);
             return null;
         }
 
         // if (!(curConfiguration.getSecondTapeCharacter().charValue() == EMPTY_CHAR)) { dumpTape2Exeption(); }
     }
 
-    private void dumpTape2Exeption() {
-        System.err.println("Zustand: " + curConfiguration.getCurState() + " Ungültiger Buchstabe auf Band 2:"
-                + curConfiguration.getFirstTapeCharacter());
+    private void dumpTape2Exeption(String zustand, char sndTapeChar) {
+        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 2:"
+                + sndTapeChar);
     }
 
-    private void dumpTape1Exeption() {
-        System.err.println("Zustand: " + curConfiguration.getCurState() + " Ungültiger Buchstabe auf Band 1:"
-                + curConfiguration.getFirstTapeCharacter());
+    private void dumpTape1Exeption(String zustand, char fstTapeChar) {
+        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:"
+                + fstTapeChar);
     }
 
     /**
@@ -372,16 +364,5 @@ public class FactorialStateControl extends Observable {
         }
 
         return i;
-    }
-
-    public void printCurrentState() {
-        System.out.print("d{" + curConfiguration.getCurState() + ", " + curConfiguration.getFirstTapeCharacter() + ", "
-                + curConfiguration.getSecondTapeCharacter() + "}");
-    }
-
-    public void printCurrentStateWithDirection() {
-        System.out.println(" |- d{" + curConfiguration.getCurState() + ", " + curConfiguration.getFirstTapeCharacter()
-                + ", " + curConfiguration.getSecondTapeCharacter() + ", " + firstRSH.getLastDirection() + ", "
-                + secondRSH.getLastDirection() + "}");
     }
 }
