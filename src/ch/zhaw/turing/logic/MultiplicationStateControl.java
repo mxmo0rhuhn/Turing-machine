@@ -7,7 +7,7 @@ import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
 
-public class MultiplicationStateControl {
+public class MultiplicationStateControl implements TuringMachine {
 
     public static final String Q0 = "Q0";
     public static final String Q1 = "Q1";
@@ -23,9 +23,9 @@ public class MultiplicationStateControl {
 
     private final ReadWriteHead firstRSH;
     private final ReadWriteHead secondRSH;
-    
+
     private final ZustandsUebergansListener listener;
-    
+
     /**
      * Erstellt eine neue Zustandssteuerung für die Multiplikation und initialisiert das Band. Die Position des
      * LS-Kopfes ist danach genau auf dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben erstellt.
@@ -38,9 +38,9 @@ public class MultiplicationStateControl {
     public MultiplicationStateControl(int multiplikator, int multiplikant, ZustandsUebergansListener listener) {
         this.firstRSH = new ReadWriteHead();
         this.secondRSH = new ReadWriteHead();
-        
+
         this.listener = listener;
-        
+
         setUpTape(multiplikator, multiplikant);
     }
 
@@ -56,10 +56,11 @@ public class MultiplicationStateControl {
      *            der zweite Lese-Schreibkopf der Maschine
      * 
      */
-    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH, ZustandsUebergansListener listener) {
+    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH,
+            ZustandsUebergansListener listener) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
-        
+
         this.listener = listener;
     }
 
@@ -99,22 +100,26 @@ public class MultiplicationStateControl {
      * Führt alle Schritte der Multiplikation aus. Am Ende der Berechnung steht der Lese- Schreibkopf des oberen Bandes
      * hinter der letzten Stelle der multiplizierten Zahl.
      */
-    public void doAllSteps() {        
-        ReadWriteHead[] tapes = new ReadWriteHead[]{this.firstRSH, this.secondRSH};
-        
+    public void doAllSteps() {
+        ReadWriteHead[] tapes = new ReadWriteHead[] { this.firstRSH, this.secondRSH };
+
         Character fstTapeChar = tapes[0].read().charValue();
         Character sndTapeChar = tapes[1].read().charValue();
 
         String curState = MultiplicationStateControl.Q0;
 
-        while (curState != MultiplicationStateControl.Q10) {
+        while (!akzeptierterZustand(curState)) {
             curState = doStep(curState, fstTapeChar, sndTapeChar);
-            
-            this.listener.inNeuenZustandGewechselt(curState, tapes);
-            
+
+            this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptierterZustand(curState));
+
             fstTapeChar = tapes[0].read().charValue();
             sndTapeChar = tapes[1].read().charValue();
         }
+    }
+
+    private static boolean akzeptierterZustand(String zustand) {
+        return zustand == MultiplicationStateControl.Q10;
     }
 
     public String doStep(String lastState, char fstTapeChar, char sndTapeChar) {
@@ -405,13 +410,7 @@ public class MultiplicationStateControl {
         System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:" + fstTapeChar);
     }
 
-    /**
-     * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale. Der Lese-Schreibkopf des ersten Bandes
-     * steht nach dieser Operation hinter der letzten Ziffer der Zahl.
-     * 
-     * @return das Ergebnis der Rechnung als Decimalzahl.
-     */
-    public int getFirstNumberAsInteger() {
+    int getFirstNumberAsInteger() {
         int i = 0;
 
         firstRSH.moveLeft();

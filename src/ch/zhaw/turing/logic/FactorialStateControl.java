@@ -7,7 +7,7 @@ import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
 
-public class FactorialStateControl {
+public class FactorialStateControl implements TuringMachine {
 
     public static final String Q0 = "Q0";
     public static final String Q1 = "Q1";
@@ -56,19 +56,25 @@ public class FactorialStateControl {
     }
 
     public void doAllSteps() {
-        ReadWriteHead firstRSH = this.firstRSH;
-        ReadWriteHead secondRSH = this.secondRSH;
+        ReadWriteHead[] tapes = new ReadWriteHead[] { this.firstRSH, this.secondRSH };
 
         // Startzustand
         String curState = FactorialStateControl.Q0;
-        Character fstTapeChar = firstRSH.read().charValue();
-        Character sndTapeChar = secondRSH.read().charValue();
+        Character fstTapeChar = tapes[0].read().charValue();
+        Character sndTapeChar = tapes[1].read().charValue();
 
-        while ((curState != FactorialStateControl.Q8) && (curState != FactorialStateControl.Q7)) {
+        while (!akzeptierterZustand(curState)) {
             curState = doStep(curState, fstTapeChar, sndTapeChar);
-            fstTapeChar = firstRSH.read().charValue();
-            sndTapeChar = secondRSH.read().charValue();
+
+            this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptierterZustand(curState));
+
+            fstTapeChar = tapes[0].read().charValue();
+            sndTapeChar = tapes[1].read().charValue();
         }
+    }
+
+    private static boolean akzeptierterZustand(String zustand) {
+        return zustand == FactorialStateControl.Q8 || zustand == FactorialStateControl.Q7;
     }
 
     public String doStep(String lastState, char fstTapeChar, char sndTapeChar) {
@@ -210,15 +216,15 @@ public class FactorialStateControl {
                     thirdRSH, new ZustandsUebergansListener() {
 
                         @Override
-                        public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes) {
+                        public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes, boolean akzeptierend) {
                             // events von der multiplikation einfach weiterleiten..
                             // aber dort gibs nur zwei baender, also muessen wir das noch
                             // etwas umbiegen, dass dieser listener mit dem umgehen kann.
                             // eigentlich sind die zwei tapes von der multiplikation in diesem
                             // fall wieder die gleichen, aber das keonnte sich ja wechseln..
                             // obowhl.. vieles koennte sich wechseln.
-                            ReadWriteHead[] facTapes = new ReadWriteHead[]{tapes[0], tapes[1], thirdRSH};
-                            listener.inNeuenZustandGewechselt(zustand, facTapes);
+                            ReadWriteHead[] facTapes = new ReadWriteHead[] { tapes[0], tapes[1], thirdRSH };
+                            listener.inNeuenZustandGewechselt(zustand, facTapes, akzeptierend);
                         }
                     });
             myMultiplicationStateControl.doAllSteps();
@@ -336,14 +342,7 @@ public class FactorialStateControl {
         System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:" + fstTapeChar);
     }
 
-    /**
-     * Kodiert die errechnete Zahl aus der unären Darstellung in die dezimale. Der Lese-Schreibkopf des ersten Bandes
-     * steht nach dieser Operation hinter der letzten Ziffer der Zahl. Diese Position wird auch als Ausgangspunkt für
-     * die Umwandelung angesehen.
-     * 
-     * @return das Ergebnis der Rechnung als Decimalzahl.
-     */
-    public int getFirstNumberAsInteger() {
+    int getFirstNumberAsInteger() {
         int i = 0;
 
         firstRSH.moveLeft();
@@ -361,4 +360,5 @@ public class FactorialStateControl {
 
         return i;
     }
+
 }
