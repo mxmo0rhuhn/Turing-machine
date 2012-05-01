@@ -17,25 +17,24 @@ public final class ReadWriteHead {
 
     private final LinkedList<Character> prefix = new LinkedList<Character>();
     private final LinkedList<Character> suffix = new LinkedList<Character>();
-    
+
     // primitve typen um auto-boxing wenn immer möglich zu vermeiden
     static final char EMPTY_CHAR = 'B';
     static final char ZERO_CHAR = '0';
     static final char ONE_CHAR = '1';
-    
+
     // wrapper type um auto-boxing wenn immer möglich zu vermeiden
     static final Character EMPTY_VALUE = new Character('B');
     static final Character ZERO_VALUE = new Character('0');
     static final Character ONE_VALUE = new Character('1');
 
-
     private DIRECTION lastDirection;
-    
+
     private Character curChar;
 
     /**
-     * Initialisiert den Lese Schreib Kopf. Der derzeitige Buchstabe ist nun ein
-     * Blank. Im Suffix ist nun auch ein Blank.
+     * Initialisiert den Lese Schreib Kopf. Der derzeitige Buchstabe ist nun ein Blank. Im Suffix ist nun auch ein
+     * Blank.
      */
     ReadWriteHead() {
         curChar = EMPTY_VALUE;
@@ -50,7 +49,7 @@ public final class ReadWriteHead {
     void moveRight() {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
-        
+
         prefix.push(curChar);
         Character curChar = suffix.pop();
 
@@ -60,18 +59,18 @@ public final class ReadWriteHead {
         if (curChar.charValue() == EMPTY_CHAR && suffix.size() == 0) {
             suffix.push(EMPTY_VALUE);
         }
-        
+
         this.curChar = curChar;
 
         lastDirection = DIRECTION.RIGHT;
-        //sendNotification();
+        // sendNotification();
     }
-    
+
     void moveLeft() {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
         suffix.push(curChar);
-        
+
         Character curChar = prefix.pop();
 
         // Simulation eines unendlichen Bandes
@@ -81,21 +80,21 @@ public final class ReadWriteHead {
         if (curChar.charValue() == EMPTY_CHAR && prefix.size() == 0) {
             prefix.push(EMPTY_VALUE);
         }
-        
+
         this.curChar = curChar;
 
         lastDirection = DIRECTION.LEFT;
-        //sendNotification();
+        // sendNotification();
     }
-    
-    Character read() {
+
+    public Character read() {
         return curChar;
     }
 
     void write(Character newCharacter) {
         Deque<Character> prefix = this.prefix;
         Deque<Character> suffix = this.suffix;
-        
+
         // Damit das Band nicht unendlich wird, werden blanks nur geschrieben
         // wenn wirklich nötig...
         if (newCharacter.charValue() == EMPTY_VALUE) {
@@ -114,8 +113,8 @@ public final class ReadWriteHead {
      * 
      * @return Der Wert von prefix
      */
-    Deque<Character> getPrefix() {
-        return prefix;
+    public Character[] getPrefix() {
+        return this.prefix.toArray(new Character[0]);
     }
 
     /**
@@ -123,8 +122,8 @@ public final class ReadWriteHead {
      * 
      * @return Der Wert von suffix
      */
-    Deque<Character> getSuffix() {
-        return suffix;
+    public Character[] getSuffix() {
+        return this.suffix.toArray(new Character[0]);
     }
 
     /**
