@@ -59,8 +59,6 @@ public class FactorialStateControl extends Observable {
     }
 
     public void doAllSteps() {
-        String curState = this.curConfiguration.getCurState();
-        
         while ((curState != FactorialStateControl.Q8)
                 && (curState != FactorialStateControl.Q7)) {
             doStep();
@@ -294,6 +292,7 @@ public class FactorialStateControl extends Observable {
         } else if (firstTapeCharacter == ONE_VALUE.charValue()) {
             firstRSH.write(EMPTY_VALUE);
             firstRSH.moveLeft();
+            //firstRSH.moveLeftAndWrite(EMPTY_VALUE);
 
             secondRSH.write(ONE_VALUE);
             secondRSH.moveRight();

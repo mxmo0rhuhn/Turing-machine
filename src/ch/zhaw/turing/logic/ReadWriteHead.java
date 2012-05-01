@@ -12,25 +12,26 @@ import java.util.Observable;
 public class ReadWriteHead extends Observable {
 
     // Richtig wären Grossbuchstaben L,R,S ... der Übersicht zuliebe anders.
-    public static String LEFT = "left";
-    public static String RIGHT = "right";
-    public static String STAY = "stay";
+    public static enum DIRECTION {
+        LEFT, RIGHT, STAY
+    }
 
-//    private final Stack<Character> prefix = new Stack<Character>();
-//    private final Stack<Character> suffix = new Stack<Character>();
+    private final LinkedList<Character> prefix = new LinkedList<Character>();
+    private final LinkedList<Character> suffix = new LinkedList<Character>();
     
-    private final Deque<Character> prefix = new LinkedList<Character>();
-    private final Deque<Character> suffix = new LinkedList<Character>();
-    
+    // primitve typen um auto-boxing wenn immer möglich zu vermeiden
     public static final char EMPTY_CHAR = 'B';
     public static final char ZERO_CHAR = '0';
     public static final char ONE_CHAR = '1';
+    
+    // wrapper type um auto-boxing wenn immer möglich zu vermeiden
     public static final Character EMPTY_VALUE = new Character('B');
     public static final Character ZERO_VALUE = new Character('0');
     public static final Character ONE_VALUE = new Character('1');
 
 
-    private String lastDirection;
+    private DIRECTION lastDirection;
+    
     private Character curChar;
 
     /**
@@ -44,7 +45,7 @@ public class ReadWriteHead extends Observable {
     }
 
     public void stay() {
-        lastDirection = ReadWriteHead.STAY;
+        lastDirection = DIRECTION.STAY;
     }
 
     public void moveRight() {
@@ -63,7 +64,7 @@ public class ReadWriteHead extends Observable {
         
         this.curChar = curChar;
 
-        lastDirection = ReadWriteHead.RIGHT;
+        lastDirection = DIRECTION.RIGHT;
         //sendNotification();
     }
 
@@ -83,7 +84,38 @@ public class ReadWriteHead extends Observable {
         
         this.curChar = curChar;
 
-        lastDirection = ReadWriteHead.LEFT;
+        lastDirection = DIRECTION.LEFT;
+        //sendNotification();
+    }
+    
+    public void moveLeftAndWrite(Character newCharacter) {
+        Deque<Character> prefix = this.prefix;
+        Deque<Character> suffix = this.suffix;
+        
+        // Damit das Band nicht unendlich wird, werden blanks nur geschrieben
+        // wenn wirklich nötig...
+        if (newCharacter.charValue() == EMPTY_VALUE) {
+            if (prefix.size() > 1 && prefix.peek().charValue() == EMPTY_CHAR) {
+                prefix.pop();
+            }
+            if (suffix.size() > 1 && suffix.peek().charValue() == EMPTY_CHAR) {
+                suffix.pop();
+            }
+        }
+        
+        suffix.push(newCharacter);
+        newCharacter = prefix.pop();
+
+        // Simulation eines unendlichen Bandes
+        // bug: je öfter gegen das Ende gefahren wird, destso mehr nutzlose
+        // blanks werden in den Stack gepushed
+        if (newCharacter.charValue() == EMPTY_CHAR && prefix.size() == 0) {
+            prefix.push(EMPTY_VALUE);
+        }
+        
+        this.curChar = newCharacter;
+
+        lastDirection = DIRECTION.LEFT;
         //sendNotification();
     }
 
@@ -131,7 +163,7 @@ public class ReadWriteHead extends Observable {
      * 
      * @return Der Wert von lastDirection
      */
-    public String getLastDirection() {
+    public DIRECTION getLastDirection() {
         return lastDirection;
     }
 
