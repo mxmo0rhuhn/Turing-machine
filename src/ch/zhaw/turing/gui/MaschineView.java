@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -45,10 +46,14 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
 
     private final JPanel infoPanel;
 
-    private JLabel infoLabel = new JLabel("Turing Maschiin");
+    private final JLabel infoLabel = new JLabel("Turing Maschine");
+    
+    private final JLabel stepsLabel = new JLabel("");
+    
+    private static volatile AtomicInteger steps = new AtomicInteger();
 
     public MaschineView() {
-        this.frame = new JFrame("Turning Maschine");
+        this.frame = new JFrame("Turing Maschine");
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.frame.setJMenuBar(createMenu());
@@ -62,6 +67,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     private JPanel createInfoPanel() {
         JPanel panel = new JPanel();
         panel.add(infoLabel);
+        panel.add(stepsLabel);
 
         // most ugly ever. who gives a shit.
         this.frame.getContentPane().setLayout(new BorderLayout());
@@ -71,7 +77,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
 
     private JMenuBar createMenu() {
         JMenuBar menuBar = new JMenuBar();
-        JMenu maschine = new JMenu("Maschine");
+        JMenu maschine = new JMenu("Maschine in Action");
 
         JMenuItem multi = new JMenuItem(MULTIPLIZIEREN_MENU_EINTRAG);
         maschine.add(multi);
@@ -107,10 +113,10 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame f = new JFrame("Timeout in Millisekunden");
-                JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 5000, 1000);
+                JSlider slider = new JSlider(JSlider.HORIZONTAL, 200, 2000, 1000);
                 slider.addChangeListener(MaschineView.this);
-                slider.setMajorTickSpacing(500);
-                slider.setMinorTickSpacing(100);
+                slider.setMajorTickSpacing(200);
+                slider.setMinorTickSpacing(50);
                 slider.setPaintLabels(true);
                 slider.setPaintTicks(true);
                 f.getContentPane().add(slider);
@@ -143,6 +149,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
             @Override
             public void run() {
                 m.doAllSteps();
+                steps = new AtomicInteger();
             }
         }).start();
     }
@@ -150,7 +157,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     private TuringMachine fakultaet() {
         String eingabe = JOptionPane.showInputDialog("Geben Sie eine Zahl ein: ");
         try {
-            this.infoLabel.setText(String.format("Der Gerät berechnet eben %s!", eingabe.trim()));
+            this.infoLabel.setText(String.format("Rechne %s!", eingabe.trim()));
             return new FactorialStateControl(Integer.parseInt(eingabe.trim()), this);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(frame, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -164,7 +171,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
             String[] parts = eingabe.split(" ");
             String zahl1 = parts[0].trim();
             String zahl2 = parts[1].trim();
-            this.infoLabel.setText(String.format("Na dann, lass uns %s mal %s rechnen..", zahl1, zahl2));
+            this.infoLabel.setText(String.format("Rechne: %s mal %s", zahl1, zahl2));
             return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), this);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(frame, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -177,6 +184,8 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         sollenWirMalPauseMachen();
         debug("Neuer Zustand: " + zustand);
 
+        int steps = MaschineView.steps.incrementAndGet();
+        stepsLabel.setText("  Schritte: " + steps);
         Character[][] bandInhalte = new Character[tapes.length][];
         for (int i = 0; i < tapes.length; i++) {
             bandInhalte[i] = get30Chars(tapes[i].getPrefix(), tapes[i].read(), tapes[i].getSuffix());

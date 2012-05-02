@@ -63,10 +63,14 @@ public class FactorialStateControl implements TuringMachine {
         Character fstTapeChar = tapes[0].read().charValue();
         Character sndTapeChar = tapes[1].read().charValue();
 
-        while (!akzeptierterZustand(curState)) {
+        boolean akzeptiert = false;
+        while (!akzeptiert) {
             curState = doStep(curState, fstTapeChar, sndTapeChar);
-
-            this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptierterZustand(curState));
+            akzeptiert = akzeptierterZustand(curState);
+            if (akzeptiert) {
+                System.out.println("Akzeptiert: Loop");
+            }
+            this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptiert);
 
             fstTapeChar = tapes[0].read().charValue();
             sndTapeChar = tapes[1].read().charValue();
@@ -213,7 +217,9 @@ public class FactorialStateControl implements TuringMachine {
                             // fall wieder die gleichen, aber das keonnte sich ja wechseln..
                             // obowhl.. vieles koennte sich wechseln.
                             ReadWriteHead[] facTapes = new ReadWriteHead[] { tapes[0], tapes[1], thirdRSH };
-                            listener.inNeuenZustandGewechselt(zustand, facTapes, akzeptierend);
+                            // es waere zwar ein akzpetierender zustand fuer die multiplikation, aber fuer die fakultaet
+                            // ist das noch nicht akzeptierend..
+                            listener.inNeuenZustandGewechselt(zustand, facTapes, false);
                         }
                     });
             myMultiplicationStateControl.doAllSteps();
