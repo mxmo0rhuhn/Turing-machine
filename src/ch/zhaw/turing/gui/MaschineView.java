@@ -47,9 +47,9 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     private final JPanel infoPanel;
 
     private final JLabel infoLabel = new JLabel("Turing Maschine");
-    
+
     private final JLabel stepsLabel = new JLabel("");
-    
+
     private static volatile AtomicInteger steps = new AtomicInteger();
 
     public MaschineView() {
@@ -62,6 +62,17 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         this.frame.setLocation(100, 0);
         this.frame.setVisible(true);
         this.frame.setSize(730, 300);
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                if (paintService != null && !paintService.isShutdown()) {
+                    paintService.shutdownNow();
+                }
+            }
+
+        }) {
+        });
     }
 
     private JPanel createInfoPanel() {
@@ -190,12 +201,12 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         for (int i = 0; i < tapes.length; i++) {
             bandInhalte[i] = get30Chars(tapes[i].getPrefix(), tapes[i].read(), tapes[i].getSuffix());
         }
-        
+
         String msg = null;
         if (akzeptiert) {
             msg = "Das Resultat ist: " + tapes[0].getResultat();
         }
-        
+
         fireUpdate(bandInhalte, msg);
         try {
             Thread.sleep(timeout);
@@ -260,7 +271,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
                 if (resultat != null) {
                     infoLabel.setText(resultat);
                 }
-                
+
                 c.validate();
                 c.repaint();
             }
