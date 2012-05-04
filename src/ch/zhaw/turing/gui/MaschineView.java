@@ -180,8 +180,8 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         this.turingThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                m.doAllSteps();
                 steps = new AtomicInteger();
+                m.doAllSteps();
             }
         });
         this.turingThread.start();
