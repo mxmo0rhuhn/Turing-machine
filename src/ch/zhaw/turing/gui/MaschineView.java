@@ -29,6 +29,8 @@ import ch.zhaw.turing.logic.TuringMachine;
 import ch.zhaw.turing.logic.ZustandsUebergansListener;
 
 public class MaschineView implements ActionListener, ZustandsUebergansListener, ChangeListener {
+    
+    private static final int minDelay = System.getProperty("minDelay") != null ? Integer.parseInt(System.getProperty("minDelay")) : 200;
 
     static boolean debug = false;
 
@@ -124,7 +126,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame f = new JFrame("Timeout in Millisekunden");
-                JSlider slider = new JSlider(JSlider.HORIZONTAL, 200, 2000, 1000);
+                JSlider slider = new JSlider(JSlider.HORIZONTAL, minDelay, 2000, 1000);
                 slider.addChangeListener(MaschineView.this);
                 slider.setMajorTickSpacing(200);
                 slider.setMinorTickSpacing(50);
