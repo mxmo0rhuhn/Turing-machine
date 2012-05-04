@@ -9,6 +9,10 @@ import java.util.LinkedList;
  * @author Max Schrimpf
  */
 public final class ReadWriteHead {
+    
+    public enum Direction {
+        LEFT, RIGHT, STAY;
+    }
 
     private final NeverNeverEnd prefix = new NeverNeverEnd();
     private final NeverNeverEnd suffix = new NeverNeverEnd();
@@ -24,6 +28,8 @@ public final class ReadWriteHead {
     static final Character ONE_VALUE = new Character('1');
 
     private Character curChar;
+    
+    private Direction lastMove = Direction.STAY;
 
     /**
      * Initialisiert den Lese Schreib Kopf. Der derzeitige Buchstabe ist nun ein Blank. Im Suffix ist nun auch ein
@@ -43,6 +49,7 @@ public final class ReadWriteHead {
             prefix.push(curChar);
         }
         this.curChar = suffix.pop();
+        this.lastMove = Direction.RIGHT;
     }
 
     void moveLeft() {
@@ -54,14 +61,24 @@ public final class ReadWriteHead {
             suffix.push(curChar);
         }
         this.curChar = prefix.pop();
+        this.lastMove = Direction.LEFT;
+    }
+
+    void write(Character newCharacter) {
+        this.curChar = newCharacter;
+        this.lastMove = Direction.STAY;
     }
 
     public Character read() {
         return this.curChar;
     }
-
-    void write(Character newCharacter) {
-        this.curChar = newCharacter;
+    
+    /**
+     * Die letzte Bewegung von diesem Lese-Schreib-Kopf
+     * @return
+     */
+    public Direction getLastMove() {
+        return this.lastMove;
     }
 
     /**
