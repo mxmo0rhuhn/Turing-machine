@@ -67,9 +67,6 @@ public class FactorialStateControl implements TuringMachine {
         while (!akzeptiert) {
             curState = doStep(curState, fstTapeChar, sndTapeChar);
             akzeptiert = akzeptierterZustand(curState);
-            if (akzeptiert) {
-                System.out.println("Akzeptiert: Loop");
-            }
             this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptiert);
 
             fstTapeChar = tapes[0].read().charValue();
