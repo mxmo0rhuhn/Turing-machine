@@ -53,6 +53,8 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     private final JLabel stepsLabel = new JLabel("");
 
     private static volatile AtomicInteger steps = new AtomicInteger();
+    
+    private Thread turingThread;
 
     public MaschineView() {
         this.frame = new JFrame("Turing Maschine");
@@ -102,8 +104,25 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
 
         maschine.add(erstelleTimeoutSliderMenu());
         maschine.add(erstellePauseKnopf());
+        maschine.add(erstelleStopKnopf());
         menuBar.add(maschine);
         return menuBar;
+    }
+
+    private JMenuItem erstelleStopKnopf() {
+        JMenuItem stop = new JMenuItem("Stop");
+        stop.addActionListener(new ActionListener() {
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                 if (turingThread != null && turingThread.isAlive()) {   
+                     turingThread.stop();
+                 }
+            }
+
+        });
+        return stop;
     }
 
     private JMenuItem erstellePauseKnopf() {
@@ -158,13 +177,14 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     }
 
     private void starteMaschine(final TuringMachine m) {
-        new Thread(new Runnable() {
+        this.turingThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 m.doAllSteps();
                 steps = new AtomicInteger();
             }
-        }).start();
+        });
+        this.turingThread.start();
     }
 
     private TuringMachine fakultaet() {
