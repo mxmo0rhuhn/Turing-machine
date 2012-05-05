@@ -3,6 +3,8 @@ package ch.zhaw.turing.logic;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import sun.net.www.content.text.plain;
+
 /**
  * Stellt ein einzelnes Band mit einer Spur und einem Lese-Schreib Kopf dar
  * 
@@ -18,14 +20,14 @@ public final class ReadWriteHead {
     private final NeverNeverEnd suffix = new NeverNeverEnd();
 
     // primitve typen um auto-boxing wenn immer möglich zu vermeiden
-    static final char EMPTY_CHAR = 'B';
-    static final char ZERO_CHAR = '0';
-    static final char ONE_CHAR = '1';
+    public static final char EMPTY_CHAR = 'B';
+    public static final char ZERO_CHAR = '0';
+    public static final char ONE_CHAR = '1';
 
     // wrapper type um auto-boxing wenn immer möglich zu vermeiden
-    static final Character EMPTY_VALUE = new Character('B');
-    static final Character ZERO_VALUE = new Character('0');
-    static final Character ONE_VALUE = new Character('1');
+    public static final Character EMPTY_VALUE = new Character('B');
+    public static final Character ZERO_VALUE = new Character('0');
+    public static final Character ONE_VALUE = new Character('1');
 
     private Character curChar;
     

@@ -31,30 +31,22 @@ import ch.zhaw.turing.logic.ZustandsUebergansListener;
 public class MaschineView implements ActionListener, ZustandsUebergansListener, ChangeListener {
     
     private static final int minDelay = System.getProperty("minDelay") != null ? Integer.parseInt(System.getProperty("minDelay")) : 200;
-
-    static boolean debug = false;
-
-    private static final String MULTIPLIZIEREN_MENU_EINTRAG = "Multiplizieren";
-
-    private static final String FAKULTAET_MENU_EINTRAG = "Fakultät";
-
     static volatile int timeout = 1000;
 
+    static boolean debug = false;
     static volatile boolean pausiert = false;
 
+    private static final String MULTIPLIZIEREN_MENU_EINTRAG = "Multiplizieren";
+    private static final String FAKULTAET_MENU_EINTRAG = "Fakultät";
+
     private static final ExecutorService paintService = Executors.newSingleThreadExecutor();
+    private Thread turingThread;
+    private static volatile AtomicInteger steps = new AtomicInteger();
 
     private final JFrame frame;
-
     private final JPanel infoPanel;
-
-    private final JLabel infoLabel = new JLabel("Turing Maschine");
-
+    private final JLabel infoLabel = new JLabel("Der (Turing) Maschine");
     private final JLabel stepsLabel = new JLabel("");
-
-    private static volatile AtomicInteger steps = new AtomicInteger();
-    
-    private Thread turingThread;
 
     public MaschineView() {
         this.frame = new JFrame("Turing Maschine");
