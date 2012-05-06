@@ -40,8 +40,6 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
     private static final String MULTIPLIZIEREN_MENU_EINTRAG = "Multiplizieren";
     private static final String FAKULTAET_MENU_EINTRAG = "Fakultät";
 
-    private volatile int steps;
-
     private final JLabel infoLabel = new JLabel("Der (Turing) Maschine");
     private final JLabel stepsLabel = new JLabel("");
 
@@ -88,11 +86,10 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
                 }
                 if (!machine.acceptedState()) {
                     machine.doStep();
-                    steps++;
                     if (machine.acceptedState()) {
                         showResult();
                     } else {
-                        stepsLabel.setText("  Schritte: " + steps);
+                        stepsLabel.setText("  Schritte: " + machine.getNumberOfSteps());
                     }
                 }
             }
@@ -108,10 +105,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
                 }
                 automatic = true;
                 calcAutomatichWithTimeout();
-                
             }
-
-
         });
         JButton stop = new JButton("Stop");
         stop.addActionListener(new ActionListener() {
@@ -138,12 +132,11 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
             public void run() {
                 while (automatic && !machine.acceptedState()) {
                     machine.doStep();
-                    steps++;
                     
                     if (machine.acceptedState()) {
                         showResult();
                     } else {
-                        stepsLabel.setText("  Schritte: " + steps);
+                        stepsLabel.setText("  Schritte: " + machine.getNumberOfSteps());
                         try {
                             Thread.sleep(timeout);
                         } catch (InterruptedException e1) {
@@ -281,8 +274,6 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
         } else if (FAKULTAET_MENU_EINTRAG.equals(menuItem.getText())) {
             machine = fakultaet();
         }
-
-        steps = 0;
     }
 
     @Override

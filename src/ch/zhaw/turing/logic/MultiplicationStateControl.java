@@ -23,6 +23,8 @@ public class MultiplicationStateControl implements TuringMachine {
 
     private String curState;
 
+    private int nuberOfSteps;
+    
     private final ReadWriteHead firstRSH;
     private final ReadWriteHead secondRSH;
 
@@ -61,11 +63,13 @@ public class MultiplicationStateControl implements TuringMachine {
      *            der zweite Lese-Schreibkopf der Maschine
      * 
      */
-    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH,
+    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH, int nuberOfSteps,
             ZustandsUebergansListener listener) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
+        this.nuberOfSteps = nuberOfSteps;
+        
         curState = MultiplicationStateControl.Q0;
         
         this.listener = listener;
@@ -138,6 +142,8 @@ public class MultiplicationStateControl implements TuringMachine {
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
+        nuberOfSteps++;
+        
         if (curState == MultiplicationStateControl.Q0) {
             curState = handleQ0(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q1) {
@@ -390,5 +396,10 @@ public class MultiplicationStateControl implements TuringMachine {
         }
 
         return i;
+    }
+
+    @Override
+    public int getNumberOfSteps() {
+        return nuberOfSteps;
     }
 }

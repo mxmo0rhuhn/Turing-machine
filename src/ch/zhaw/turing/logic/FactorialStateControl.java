@@ -19,6 +19,8 @@ public class FactorialStateControl implements TuringMachine {
     public static final String Q7 = "Q7";
     public static final String Q8 = "Q8";
 
+    private int nuberOfSteps;
+    
     private String curState;
     //private String nextState;
 
@@ -69,6 +71,7 @@ public class FactorialStateControl implements TuringMachine {
      */
     private void setUpTape(int number) {
         curState = FactorialStateControl.Q0;
+        nuberOfSteps = 0;
 
         for (int i = 0; i < number; i++) {
             firstRSH.write('0');
@@ -103,6 +106,8 @@ public class FactorialStateControl implements TuringMachine {
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
+        nuberOfSteps++;
+        
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
 
@@ -224,9 +229,10 @@ public class FactorialStateControl implements TuringMachine {
             secondRSH.moveRight();
 
             MultiplicationStateControl myMultiplicationStateControl = new MultiplicationStateControl(secondRSH,
-                    thirdRSH, multListener);
+                    thirdRSH, nuberOfSteps, multListener);
             myMultiplicationStateControl.doAllSteps();
-
+            nuberOfSteps = myMultiplicationStateControl.getNumberOfSteps();
+            
             if (firstRSH.read().charValue() == ZERO_CHAR) {
                 firstRSH.write(EMPTY_VALUE);
                 firstRSH.moveRight();
@@ -349,6 +355,11 @@ public class FactorialStateControl implements TuringMachine {
         }
 
         return i;
+    }
+    
+    @Override
+    public int getNumberOfSteps() {
+        return nuberOfSteps;
     }
 
 }
