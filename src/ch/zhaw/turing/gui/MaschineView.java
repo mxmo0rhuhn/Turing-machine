@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observer;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -36,17 +35,17 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
     private static boolean debug = false;
 
     // soll die maschine automatisch durchlaufen? d.h. kein step-by-step
-    static volatile boolean automatisch = false;
+    static volatile boolean automatic = false;
 
     private static final String MULTIPLIZIEREN_MENU_EINTRAG = "Multiplizieren";
     private static final String FAKULTAET_MENU_EINTRAG = "Fakultät";
 
-    private static volatile AtomicInteger steps = new AtomicInteger();
+    private volatile int steps;
 
     private final JLabel infoLabel = new JLabel("Der (Turing) Maschine");
     private final JLabel stepsLabel = new JLabel("");
 
-    private TuringMachine machine;
+    private volatile TuringMachine machine;
 
     // 3 Panel die die einzelnen Lese-Schreib Koepfe ueberwachen
     private MaschinePanel firstRWHPanel;
@@ -89,8 +88,11 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
                 }
                 if (!machine.acceptedState()) {
                     machine.doStep();
+                    steps++;
                     if (machine.acceptedState()) {
                         showResult();
+                    } else {
+                        stepsLabel.setText("  Schritte: " + steps);
                     }
                 }
             }
@@ -104,15 +106,11 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
                 if (machine == null) {
                     return;
                 }
-                automatisch = true;
-                while (automatisch && !machine.acceptedState()) {
-                    machine.doStep();
-
-                    if (machine.acceptedState()) {
-                        showResult();
-                    }
-                }
+                automatic = true;
+                calcAutomatichWithTimeout();
+                
             }
+
 
         });
         JButton stop = new JButton("Stop");
@@ -123,7 +121,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
                 if (machine == null) {
                     return;
                 }
-                automatisch = false;
+                automatic = false;
             }
 
         });
@@ -132,9 +130,35 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
         panel.add(stop);
         return panel;
     }
+    
+    private void calcAutomatichWithTimeout() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (automatic && !machine.acceptedState()) {
+                    machine.doStep();
+                    steps++;
+                    
+                    if (machine.acceptedState()) {
+                        showResult();
+                    } else {
+                        stepsLabel.setText("  Schritte: " + steps);
+                        try {
+                            Thread.sleep(timeout);
+                        } catch (InterruptedException e1) {
+                            Thread.interrupted();
+                        }
+                    }
+                    
+                }
+            }
+            
+        }).start();
+    }
 
     private void showResult() {
-        // FIXME resultat anzeigen
+        infoLabel.setText("Das Resultat ist: " + firstRWH.getResultat());
     }
 
     private JPanel createCenterPanel() {
@@ -258,28 +282,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
             machine = fakultaet();
         }
 
-        steps = new AtomicInteger();
-    }
-
-    @Override
-    public void inNeuenZustandGewechselt(String zustand, boolean akzeptiert) {
-        debug("Neuer Zustand: " + zustand);
-
-        int steps = MaschineView.steps.incrementAndGet();
-        stepsLabel.setText("  Schritte: " + steps);
-
-        String msg = null;
-        if (akzeptiert) {
-            msg = "Das Resultat ist: " + firstRWH.getResultat();
-        }
-
-        infoLabel.setText(msg);
-
-        try {
-            Thread.sleep(timeout);
-        } catch (InterruptedException e) {
-            Thread.interrupted();
-        }
+        steps = 0;
     }
 
     @Override
@@ -292,5 +295,11 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
         if (debug) {
             System.out.println(message);
         }
+    }
+
+    @Override
+    public void inNeuenZustandGewechselt(String zustand, boolean akzeptiert) {
+        // TODO Auto-generated method stub
+        
     }
 }
