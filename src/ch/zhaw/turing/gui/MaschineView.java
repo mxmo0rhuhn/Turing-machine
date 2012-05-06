@@ -39,9 +39,11 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
     private static final String MULTIPLIZIEREN_MENU_EINTRAG = "Multiplizieren";
     private static final String FAKULTAET_MENU_EINTRAG = "Fakultät";
 
-    private final JLabel infoLabel = new JLabel("Der (Turing) Maschine");
+    private final JLabel infoLabel = new JLabel("Der (Turing) Gerät");
     private final JLabel stepsLabel = new JLabel("");
 
+    private final DiagrammView curDiagrammView; 
+    
     private volatile TuringMachine machine;
 
     // 3 Panel die die einzelnen Lese-Schreib Koepfe ueberwachen
@@ -61,9 +63,13 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
 
         buildFrame();
 
+        curDiagrammView = new DiagrammView();
+        
         this.setLocation(100, 0);
         this.setVisible(true);
-        this.setSize(730, 500);
+        this.setResizable(false);
+        this.setSize(730, 450);
+        this.setLocationRelativeTo(null);
     }
 
     private void buildFrame() {
@@ -272,9 +278,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             machine = fakultaet();
         }
         if (machine != null) {
-            DiagrammView v = new DiagrammView();
-            v.update(machine, null);
-            machine.addObserver(v);
+            curDiagrammView.update(machine, null);
+            curDiagrammView.setVisible(true);
+            machine.addObserver(curDiagrammView);
             
             
             stepsLabel.setText("  Schritte: " + machine.getNumberOfSteps());
