@@ -1,5 +1,8 @@
 package ch.zhaw.turing.logic;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,12 +13,24 @@ import org.junit.Test;
  */
 public class FactorialStateControlTest {
 
+    private Observer DUMMY_OBSERVER = new Observer() {
+
+        @Override
+        public void update(Observable o, Object arg) {
+
+        }
+
+    };
+
     // < 1 Sekunde
     @Test
     public void afactorialOfZero() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(0);
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
 
-        curFactorialStateControl.doAllSteps();
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
 
         Assert.assertEquals(1, curFactorialStateControl.getFirstNumberAsInteger());
     }
@@ -24,9 +39,10 @@ public class FactorialStateControlTest {
     @Test
     public void bfactorialOfOne() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(1);
-
-        curFactorialStateControl.doAllSteps();
-
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
         Assert.assertEquals(1, curFactorialStateControl.getFirstNumberAsInteger());
     }
 
@@ -34,8 +50,10 @@ public class FactorialStateControlTest {
     @Test
     public void cfactorialOfTwo() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(2);
-
-        curFactorialStateControl.doAllSteps();
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
 
         Assert.assertEquals(2, curFactorialStateControl.getFirstNumberAsInteger());
     }
@@ -44,8 +62,10 @@ public class FactorialStateControlTest {
     @Test
     public void dfactorialOfThree() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(3);
-
-        curFactorialStateControl.doAllSteps();
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
 
         Assert.assertEquals(6, curFactorialStateControl.getFirstNumberAsInteger());
     }
@@ -54,8 +74,10 @@ public class FactorialStateControlTest {
     @Test
     public void efactorialOfFour() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(4);
-
-        curFactorialStateControl.doAllSteps();
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
 
         Assert.assertEquals(24, curFactorialStateControl.getFirstNumberAsInteger());
     }
@@ -64,8 +86,10 @@ public class FactorialStateControlTest {
     @Test
     public void ffactorialOfFive() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(5);
-
-        curFactorialStateControl.doAllSteps();
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
 
         Assert.assertEquals(120, curFactorialStateControl.getFirstNumberAsInteger());
     }
@@ -74,8 +98,10 @@ public class FactorialStateControlTest {
     @Test
     public void gfactorialOfSix() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(6);
-
-        curFactorialStateControl.doAllSteps();
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
 
         Assert.assertEquals(720, curFactorialStateControl.getFirstNumberAsInteger());
     }
@@ -86,30 +112,33 @@ public class FactorialStateControlTest {
     @Test
     public void hfactorialOfSeven() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(7);
-
-        curFactorialStateControl.doAllSteps();
-
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
         Assert.assertEquals(5040, curFactorialStateControl.getFirstNumberAsInteger());
-
     }
-//
+
+    //
     @Test
     public void ifactorialOfEight() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(8);
-
-        curFactorialStateControl.doAllSteps();
+        curFactorialStateControl.addObserver(DUMMY_OBSERVER);
+        while (!curFactorialStateControl.acceptedState()) {
+            curFactorialStateControl.doStep();
+        }
 
         Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
     }
-//
-//    @Test
-//    public void ifactorialOfNine() {
-//        FactorialStateControl curFactorialStateControl = new FactorialStateControl(9, this);
-//
-//        curFactorialStateControl.doAllSteps();
-//
-//        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
-//    }
+    //
+    // @Test
+    // public void ifactorialOfNine() {
+    // FactorialStateControl curFactorialStateControl = new FactorialStateControl(9, this);
+    //
+    // curFactorialStateControl.doAllSteps();
+    //
+    // Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
+    // }
 
     //
     // @Test
