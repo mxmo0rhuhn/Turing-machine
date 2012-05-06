@@ -20,7 +20,7 @@ public class FactorialStateControl implements TuringMachine {
     public static final String Q8 = "Q8";
 
     private String curState;
-    private String nextState;
+    //private String nextState;
 
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
@@ -68,7 +68,7 @@ public class FactorialStateControl implements TuringMachine {
      * @param firstRSH
      */
     private void setUpTape(int number) {
-        nextState = FactorialStateControl.Q0;
+        curState = FactorialStateControl.Q0;
 
         for (int i = 0; i < number; i++) {
             firstRSH.write('0');
@@ -100,8 +100,6 @@ public class FactorialStateControl implements TuringMachine {
     @Override
     public void doStep() {
 
-        curState = nextState;
-        this.listener.inNeuenZustandGewechselt(curState, acceptedState());
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
@@ -109,26 +107,28 @@ public class FactorialStateControl implements TuringMachine {
         // Entscheidung fuer die naechste konfiguration.
 
         if (curState == FactorialStateControl.Q0) {
-            nextState = handleQ0(fstTapeChar, sndTapeChar);
+            curState = handleQ0(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q1) {
-            nextState = handleQ1(fstTapeChar, sndTapeChar);
+            curState = handleQ1(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q2) {
-            nextState = handleQ2(fstTapeChar, sndTapeChar);
+            curState = handleQ2(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q3) {
-            nextState = handleQ3(fstTapeChar, sndTapeChar);
+            curState = handleQ3(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q4) {
-            nextState = handleQ4(fstTapeChar, sndTapeChar);
+            curState = handleQ4(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q5) {
-            nextState = handleQ5(fstTapeChar, sndTapeChar);
+            curState = handleQ5(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q6) {
-            nextState = handleQ6(fstTapeChar, sndTapeChar);
+            curState = handleQ6(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q7) {
-            nextState = handleQ7(fstTapeChar, sndTapeChar);
+            curState = handleQ7(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q8) {
-            nextState = handleQ8(fstTapeChar, sndTapeChar);
+            curState = handleQ8(fstTapeChar, sndTapeChar);
         } else {
             throw new IllegalStateException(curState + " existiert nicht!");
         }
+        
+        this.listener.inNeuenZustandGewechselt(curState, acceptedState());
     }
 
     private String handleQ8(char fstTapeChar, char sndTapeChar) {

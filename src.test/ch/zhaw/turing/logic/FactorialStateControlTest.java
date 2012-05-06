@@ -95,14 +95,14 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
 
     }
 //
-//    @Test
-//    public void ifactorialOfEight() {
-//        FactorialStateControl curFactorialStateControl = new FactorialStateControl(8, this);
-//
-//        curFactorialStateControl.doAllSteps();
-//
-//        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
-//    }
+    @Test
+    public void ifactorialOfEight() {
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(8, this);
+
+        curFactorialStateControl.doAllSteps();
+
+        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
+    }
 //
 //    @Test
 //    public void ifactorialOfNine() {
