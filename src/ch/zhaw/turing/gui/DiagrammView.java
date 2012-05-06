@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -21,13 +22,11 @@ public class DiagrammView extends JFrame implements Observer {
 
     private static final String DIR_SEP = File.separator;
 
-    private static final String MULTIPLICATION_PATTERN = String.format(
-            "Multiplikation%sZustaende%s%s hervorgehoben.png", DIR_SEP, DIR_SEP, "%s");
+    private static final String FULL_JAR_FILENAME_MULIPLICATION = String.format(
+            "%sZeichnungen%sMultiplikation%sZustaende%s%s hervorgehoben.png", DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, "%s");
 
-    private static final String FACTORIAL_PATTERN = String.format("Fakultaet%sZustaende%s%s.png", DIR_SEP, DIR_SEP,
-            "%s");
-
-    private File dir;
+    private static final String FULL_JAR_FILENAME_FACTORIAL = String.format(
+            "%sZeichnungen%sFakultaet%sZustaende%s%s.png", DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, "%s");
 
     private BufferedImage bufImage;
 
@@ -35,14 +34,6 @@ public class DiagrammView extends JFrame implements Observer {
 
     public DiagrammView() {
         super("Übergangsdiagramm");
-        this.dir = new File(String.format(".%sZeichnungen", DIR_SEP));
-        if (!dir.exists()) {
-            dir = new File(dir.getParent(), "Zeichnungen");
-            if (!dir.exists()) {
-                throw new IllegalArgumentException("Wo sind die Zeichnungen? Habe sie in " + dir.getAbsolutePath()
-                        + " nicht gefunden..");
-            }
-        }
         getContentPane().add(imgPanel);
         setSize(500, 500);
         setVisible(true);
@@ -55,20 +46,19 @@ public class DiagrammView extends JFrame implements Observer {
 
         String imgName;
         if (m instanceof FactorialStateControl) {
-            imgName = String.format(FACTORIAL_PATTERN, zustand);
+            imgName = String.format(FULL_JAR_FILENAME_FACTORIAL, zustand);
         } else if (m instanceof MultiplicationStateControl) {
-            imgName = String.format(MULTIPLICATION_PATTERN, zustand);
+            imgName = String.format(FULL_JAR_FILENAME_MULIPLICATION, zustand);
         } else {
             throw new IllegalArgumentException(o.getClass() + " sollte nicht im DiagrammView landen..");
         }
 
-        File imgPath = new File(dir, imgName);
-        if (!imgPath.exists()) {
-            throw new IllegalArgumentException(imgPath + " existiert nicht..");
+        URL fileUrl = this.getClass().getResource(imgName);
+        if (fileUrl == null) {
+            throw new RuntimeException(imgName + " does not exist");
         }
-
         try {
-            this.bufImage = ImageIO.read(imgPath);
+            this.bufImage = ImageIO.read(fileUrl);
             repaint();
         } catch (IOException e) {
             throw new RuntimeException(e);
