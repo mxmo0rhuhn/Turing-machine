@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 import ch.zhaw.turing.logic.ReadWriteHead;
 
-public class MaschinePanel extends JPanel implements Observer {
+public class ReadWriteHeadPanel extends JPanel implements Observer {
 
     private static final long serialVersionUID = 4732119788313761840L;
 
@@ -24,7 +24,7 @@ public class MaschinePanel extends JPanel implements Observer {
     private ReadWriteHead curRWH;
 
     private Character[] curTape;
-    
+
     public void setRWH(ReadWriteHead curRWH) {
         this.curRWH = curRWH;
         curTape = curRWH.getTapeState();
@@ -38,15 +38,28 @@ public class MaschinePanel extends JPanel implements Observer {
     private void zeichneBandElement(Graphics g) {
 
         g.clearRect(0, 0, getWidth(), getHeight());
-        int topOffset = MaschinePanel.topOffset + elemHeight;
+        int topOffset = ReadWriteHeadPanel.topOffset + elemHeight;
 
-        g.setColor(new Color(0, 0, 0));
+        switch (curRWH.getLastMove()) {
+        case LEFT:
+            g.setColor(new Color(255, 165, 0));
+            g.fillRect(16 * leftOffset + 14 * elemWidth + elemWidth/2, topOffset - schreibkopfHeight - 3, elemWidth/2, schreibkopfHeight);
+            break;
+        case RIGHT:
+            g.setColor(new Color(0, 100, 0));
+            g.fillRect(16 * leftOffset + 16 * elemWidth, topOffset - schreibkopfHeight - 3, elemWidth/2, schreibkopfHeight);
+            break;
+        default:
+            g.setColor(new Color(0, 0, 0));
+            break;
+        }
+        
         // Schreibkopf
         g.fillRect(16 * leftOffset + 15 * elemWidth, topOffset - schreibkopfHeight - 3, elemWidth, schreibkopfHeight);
 
         // Band
         for (int j = 0; j < curTape.length; j++) {
-            int leftOffset = (j + 1) * MaschinePanel.leftOffset + j * elemWidth;
+            int leftOffset = (j + 1) * ReadWriteHeadPanel.leftOffset + j * elemWidth;
 
             // System.out.println(curTape[j]);
             switch (getElemAsChar(curTape, j)) {
@@ -62,11 +75,11 @@ public class MaschinePanel extends JPanel implements Observer {
             }
 
             g.drawRect(leftOffset, topOffset, elemWidth, elemHeight);
-            g.drawString(getElem(curTape, j), leftOffset + elemWidth / 2 - 4, topOffset + (elemHeight / 2) + 4);
+            g.drawString(getElemAsString(curTape, j), leftOffset + elemWidth / 2 - 4, topOffset + (elemHeight / 2) + 4);
         }
     }
 
-    private String getElem(Character[] band, int idx) {
+    private String getElemAsString(Character[] band, int idx) {
         try {
             return Character.toString(band[idx]);
         } catch (ArrayIndexOutOfBoundsException e) {

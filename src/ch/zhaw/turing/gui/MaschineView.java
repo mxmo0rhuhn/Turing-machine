@@ -45,9 +45,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
     private volatile TuringMachine machine;
 
     // 3 Panel die die einzelnen Lese-Schreib Koepfe ueberwachen
-    private MaschinePanel firstRWHPanel;
-    private MaschinePanel secondRWHPanel;
-    private MaschinePanel thirdRWHPanel;
+    private ReadWriteHeadPanel firstRWHPanel;
+    private ReadWriteHeadPanel secondRWHPanel;
+    private ReadWriteHeadPanel thirdRWHPanel;
 
     private ReadWriteHead firstRWH;
     private ReadWriteHead secondRWH;
@@ -157,9 +157,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
         JPanel centerJPanel = new JPanel();
         centerJPanel.setLayout(new GridLayout(3, 0));
 
-        firstRWHPanel = new MaschinePanel();
-        secondRWHPanel = new MaschinePanel();
-        thirdRWHPanel = new MaschinePanel();
+        firstRWHPanel = new ReadWriteHeadPanel();
+        secondRWHPanel = new ReadWriteHeadPanel();
+        thirdRWHPanel = new ReadWriteHeadPanel();
 
         firstRWH = new ReadWriteHead();
         secondRWH = new ReadWriteHead();
