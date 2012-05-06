@@ -1,23 +1,25 @@
 package ch.zhaw.turing.logic;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
-
-import sun.net.www.content.text.plain;
+import java.util.List;
+import java.util.Observable;
 
 /**
  * Stellt ein einzelnes Band mit einer Spur und einem Lese-Schreib Kopf dar
  * 
  * @author Max Schrimpf
  */
-public final class ReadWriteHead {
+public final class ReadWriteHead extends Observable{
     
     public enum Direction {
         LEFT, RIGHT, STAY;
     }
 
-    private final NeverNeverEnd prefix = new NeverNeverEnd();
-    private final NeverNeverEnd suffix = new NeverNeverEnd();
+    private NeverNeverEnd prefix;
+    private NeverNeverEnd suffix;
 
     // primitve typen um auto-boxing wenn immer möglich zu vermeiden
     public static final char EMPTY_CHAR = 'B';
@@ -37,13 +39,14 @@ public final class ReadWriteHead {
      * Initialisiert den Lese Schreib Kopf. Der derzeitige Buchstabe ist nun ein Blank. Im Suffix ist nun auch ein
      * Blank.
      */
-    ReadWriteHead() {
-        curChar = EMPTY_VALUE;
+    public ReadWriteHead() {
+        clear();
     }
 
     void moveRight() {
-        Deque<Character> prefix = this.prefix;
-        Deque<Character> suffix = this.suffix;
+// Wozu?
+//        Deque<Character> prefix = this.prefix;
+//        Deque<Character> suffix = this.suffix;
 
         Character curChar = this.curChar;
         
@@ -52,11 +55,15 @@ public final class ReadWriteHead {
         }
         this.curChar = suffix.pop();
         this.lastMove = Direction.RIGHT;
+        
+        setChanged();
+        notifyObservers();
     }
 
     void moveLeft() {
-        Deque<Character> prefix = this.prefix;
-        Deque<Character> suffix = this.suffix;
+// Wozu?        
+//        Deque<Character> prefix = this.prefix;
+//        Deque<Character> suffix = this.suffix;
 
         Character curChar = this.curChar;
         if (curChar.charValue() != EMPTY_CHAR) {
@@ -64,14 +71,23 @@ public final class ReadWriteHead {
         }
         this.curChar = prefix.pop();
         this.lastMove = Direction.LEFT;
+
+        setChanged();
+        notifyObservers();
     }
 
     void write(Character newCharacter) {
         this.curChar = newCharacter;
-        this.lastMove = Direction.STAY;
+//        this.lastMove = Direction.STAY;
+        
+        setChanged();
+        notifyObservers();
     }
 
     public Character read() {
+        setChanged();
+        notifyObservers();
+        
         return this.curChar;
     }
     
@@ -100,7 +116,43 @@ public final class ReadWriteHead {
     public Character[] getSuffix() {
         return this.suffix.toArray(new Character[0]);
     }
+    
+    /**
+     * Erstellt ein Array mit dem derzeitigen Bandinhalt der Maschine
+     *
+     * @return der Bandinhalt der Maschine.
+     */
+    public Character[] getTapeState(){
+    
+        Character[] prefix;
+        Character[] suffix;
+        Character[] resultat = new Character[31];
+    
+        prefix = Arrays.copyOfRange(this.prefix.toArray(new Character[0]), 0, 15); // take at most 15
+        
+        List<Character> reverse = Arrays.asList(prefix);
+        Collections.reverse(reverse);
+        prefix = reverse.toArray(new Character[0]);
 
+        suffix = Arrays.copyOfRange(this.suffix.toArray(new Character[0]), 0, 15); // take at most 15
+    
+        System.arraycopy(prefix, 0, resultat, 15 - prefix.length, prefix.length);
+        resultat[15] = curChar;
+        System.arraycopy(suffix, 0, resultat, 16, suffix.length);
+       
+        for (int i = 0; i < resultat.length; i++) {
+            if (resultat[i] == null) {
+                resultat[i] = new Character('B');
+            }
+        }
+        return resultat;
+    }
+
+    /**
+     * Gibt die Erste Zahl auf dem Band aus. 
+     *
+     * @return die Erste Zahl auf dem Band.
+     */
     public int getResultat() {
         int i = 0;
 
@@ -118,24 +170,10 @@ public final class ReadWriteHead {
 
         return i;
     }
-}
-
-class NeverNeverEnd extends LinkedList<Character> {
-
-    @Override
-    public Character pop() {
-        if (isEmpty()) {
-            return ReadWriteHead.EMPTY_VALUE;
-        } else {
-            return super.pop();
-        }
-    }
     
-    @Override
-    public Character peek() {
-        throw new UnsupportedOperationException("implement me");
+    public void clear() {
+        curChar = EMPTY_VALUE;
+        prefix = new NeverNeverEnd();
+        suffix = new NeverNeverEnd();
     }
-
-    private static final long serialVersionUID = 1819116069884717047L;
-
 }

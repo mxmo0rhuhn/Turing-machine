@@ -1,12 +1,13 @@
 package ch.zhaw.turing.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,18 +23,21 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.sun.org.apache.xerces.internal.impl.RevalidationHandler;
+
 import ch.zhaw.turing.logic.FactorialStateControl;
 import ch.zhaw.turing.logic.MultiplicationStateControl;
 import ch.zhaw.turing.logic.ReadWriteHead;
 import ch.zhaw.turing.logic.TuringMachine;
 import ch.zhaw.turing.logic.ZustandsUebergansListener;
 
-public class MaschineView implements ActionListener, ZustandsUebergansListener, ChangeListener {
-    
-    private static final int minDelay = System.getProperty("minDelay") != null ? Integer.parseInt(System.getProperty("minDelay")) : 200;
-    static volatile int timeout = 1000;
+public class MaxMaschineView extends JFrame implements ActionListener, ZustandsUebergansListener, ChangeListener {
 
-    static boolean debug = false;
+    private static final int minDelay = System.getProperty("minDelay") != null ? Integer.parseInt(System
+            .getProperty("minDelay")) : 200;
+    static volatile int timeout = 1;
+
+    static boolean debug = true;
     static volatile boolean pausiert = false;
 
     private static final String MULTIPLIZIEREN_MENU_EINTRAG = "Multiplizieren";
@@ -43,21 +47,29 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     private Thread turingThread;
     private static volatile AtomicInteger steps = new AtomicInteger();
 
-    private final JFrame frame;
-    private final JPanel infoPanel;
     private final JLabel infoLabel = new JLabel("Der (Turing) Maschine");
     private final JLabel stepsLabel = new JLabel("");
 
-    public MaschineView() {
-        this.frame = new JFrame("Turing Maschine");
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    // 3 Panel die die einzelnen Lese-Schreib Koepfe ueberwachen
+    private MaxMaschinePanel firstRWHPanel;
+    private MaxMaschinePanel secondRWHPanel;
+    private MaxMaschinePanel thirdRWHPanel;
+    
+    private ReadWriteHead firstRWH; 
+    private ReadWriteHead secondRWH;
+    private ReadWriteHead thirdRWH; 
 
-        this.frame.setJMenuBar(createMenu());
-        this.infoPanel = createInfoPanel();
+    public MaxMaschineView() {
+        this.setTitle("Turing Maschine");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.frame.setLocation(100, 0);
-        this.frame.setVisible(true);
-        this.frame.setSize(730, 300);
+        this.setJMenuBar(createMenu());
+
+        buildFrame();
+
+        this.setLocation(100, 0);
+        this.setVisible(true);
+        this.setSize(730, 500);
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 
             @Override
@@ -70,14 +82,50 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         });
     }
 
-    private JPanel createInfoPanel() {
+    private void buildFrame() {
+        setLayout(new BorderLayout());
+        add(createNorthPanel(), BorderLayout.NORTH);
+        add(createCenterPanel(), BorderLayout.CENTER);
+        add(createSouthPanel(), BorderLayout.SOUTH);
+    }
+
+    private JPanel createSouthPanel() {
+        // next Step Pause und run Knoepfe hier
+        return new JPanel();
+    }
+
+    private JPanel createCenterPanel() {
+        JPanel centerJPanel = new JPanel();
+        centerJPanel.setLayout(new GridLayout(3, 0));
+        
+        firstRWHPanel = new MaxMaschinePanel();
+        secondRWHPanel = new MaxMaschinePanel();
+        thirdRWHPanel = new MaxMaschinePanel();
+        
+        firstRWH = new ReadWriteHead();
+        secondRWH = new ReadWriteHead();
+        thirdRWH = new ReadWriteHead();
+
+        firstRWHPanel.setRWH(firstRWH);
+        secondRWHPanel.setRWH(secondRWH);
+        thirdRWHPanel.setRWH(thirdRWH);
+
+        firstRWH.addObserver((Observer) firstRWHPanel);
+        secondRWH.addObserver((Observer) secondRWHPanel);
+        thirdRWH.addObserver((Observer) thirdRWHPanel);
+        
+        centerJPanel.add(firstRWHPanel);
+        centerJPanel.add(secondRWHPanel);
+        centerJPanel.add(thirdRWHPanel);
+
+        return centerJPanel;
+    }
+
+    private JPanel createNorthPanel() {
         JPanel panel = new JPanel();
         panel.add(infoLabel);
         panel.add(stepsLabel);
 
-        // most ugly ever. who gives a shit.
-        this.frame.getContentPane().setLayout(new BorderLayout());
-        this.frame.getContentPane().add(panel);
         return panel;
     }
 
@@ -107,9 +155,9 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
             @SuppressWarnings("deprecation")
             @Override
             public void actionPerformed(ActionEvent e) {
-                 if (turingThread != null && turingThread.isAlive()) {   
-                     turingThread.stop();
-                 }
+                if (turingThread != null && turingThread.isAlive()) {
+                    turingThread.stop();
+                }
             }
 
         });
@@ -137,7 +185,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
             public void actionPerformed(ActionEvent e) {
                 JFrame f = new JFrame("Timeout in Millisekunden");
                 JSlider slider = new JSlider(JSlider.HORIZONTAL, minDelay, 2000, 1000);
-                slider.addChangeListener(MaschineView.this);
+                slider.addChangeListener(MaxMaschineView.this);
                 slider.setMajorTickSpacing(200);
                 slider.setMinorTickSpacing(50);
                 slider.setPaintLabels(true);
@@ -166,9 +214,16 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         String eingabe = JOptionPane.showInputDialog("Geben Sie eine Zahl ein: ");
         try {
             this.infoLabel.setText(String.format("Rechne %s!", eingabe.trim()));
-            return new FactorialStateControl(Integer.parseInt(eingabe.trim()), this);
+           
+            firstRWH.clear();
+            secondRWH.clear();
+            thirdRWH.clear();
+
+            return new FactorialStateControl(Integer.parseInt(eingabe.trim()), firstRWH, secondRWH, thirdRWH, this);
         } catch (Exception e) {
-//            JOptionPane.showMessageDialog(frame, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Fehler: " + e.getMessage(),
+             "Fehler", JOptionPane.ERROR_MESSAGE);
             return null;
         }
     }
@@ -179,19 +234,18 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
             String[] parts = eingabe.split(" ");
             String zahl1 = parts[0].trim();
             String zahl2 = parts[1].trim();
-            this.infoLabel.setText(String.format("Rechne: %s mal %s", zahl1, zahl2));
-            return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), this);
-        } catch (Exception e) {
-//            JOptionPane.showMessageDialog(frame, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-    }
 
-    private static void fillNullValues(Character[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == null) {
-                arr[i] = new Character('B');
-            }
+            firstRWH.clear();
+            secondRWH.clear();
+            thirdRWH.clear();
+
+            this.infoLabel.setText(String.format("Rechne: %s mal %s", zahl1, zahl2));
+            return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), firstRWH,
+                    secondRWH, this);
+        } catch (Exception e) {
+             JOptionPane.showMessageDialog(this, "Fehler: " + e.getMessage(),
+             "Fehler", JOptionPane.ERROR_MESSAGE);
+            return null;
         }
     }
 
@@ -206,28 +260,6 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         }
     }
 
-    private void fireUpdate(final Character[][] bandInhalte, final String resultat) {
-
-        paintService.execute(new Runnable() {
-            @Override
-            public void run() {
-                Container c = frame.getContentPane();
-                c.removeAll();
-                MaschinePanel mp = new MaschinePanel(bandInhalte);
-                c.setLayout(new BorderLayout());
-                c.add(mp, BorderLayout.CENTER);
-                c.add(infoPanel, BorderLayout.NORTH);
-
-                if (resultat != null) {
-                    infoLabel.setText(resultat);
-                }
-
-                c.validate();
-                c.repaint();
-            }
-        });
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         JMenuItem menuItem = (JMenuItem) e.getSource();
@@ -237,7 +269,7 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
         } else if (FAKULTAET_MENU_EINTRAG.equals(menuItem.getText())) {
             m = fakultaet();
         }
-    
+
         if (m != null) {
             starteMaschine(m);
         }
@@ -247,20 +279,17 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes, boolean akzeptiert) {
         sollenWirMalPauseMachen();
         debug("Neuer Zustand: " + zustand);
-    
-        int steps = MaschineView.steps.incrementAndGet();
+
+        int steps = MaxMaschineView.steps.incrementAndGet();
         stepsLabel.setText("  Schritte: " + steps);
-        Character[][] bandInhalte = new Character[tapes.length][];
-        for (int i = 0; i < tapes.length; i++) {
-            bandInhalte[i] = get30Chars(tapes[i].getPrefix(), tapes[i].read(), tapes[i].getSuffix());
-        }
-    
+
         String msg = null;
         if (akzeptiert) {
             msg = "Das Resultat ist: " + tapes[0].getResultat();
         }
-    
-        fireUpdate(bandInhalte, msg);
+
+        infoLabel.setText(msg);
+
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException e) {
@@ -272,28 +301,6 @@ public class MaschineView implements ActionListener, ZustandsUebergansListener, 
     public void stateChanged(ChangeEvent e) {
         timeout = ((JSlider) e.getSource()).getValue();
         debug("Timeout angepasst nach: " + timeout);
-    }
-
-    static Character[] get30Chars(Character[] prefix, Character curChar, Character[] suffix) {
-        Character[] resultat = new Character[31];
-    
-        List<Character> reverse = Arrays.asList(prefix);
-        Collections.reverse(reverse);
-        prefix = reverse.toArray(new Character[0]);
-    
-        if (prefix.length > 15) {
-            prefix = Arrays.copyOfRange(prefix, 0, 15); // take at most 15
-        }
-        if (suffix.length > 15) {
-            suffix = Arrays.copyOfRange(suffix, 0, 15); // take at most 15
-        }
-    
-        System.arraycopy(prefix, 0, resultat, 15 - prefix.length, prefix.length);
-        resultat[15] = curChar;
-        System.arraycopy(suffix, 0, resultat, 16, suffix.length);
-        fillNullValues(resultat);
-    
-        return resultat;
     }
 
     static void debug(String message) {

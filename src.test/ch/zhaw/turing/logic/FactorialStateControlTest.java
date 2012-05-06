@@ -93,24 +93,24 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
         Assert.assertEquals(5040, curFactorialStateControl.getFirstNumberAsInteger());
 
     }
-
-    @Test
-    public void ifactorialOfEight() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(8, this);
-
-        curFactorialStateControl.doAllSteps();
-
-        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
-    }
-
-    @Test
-    public void ifactorialOfNine() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(9, this);
-
-        curFactorialStateControl.doAllSteps();
-
-        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
-    }
+//
+//    @Test
+//    public void ifactorialOfEight() {
+//        FactorialStateControl curFactorialStateControl = new FactorialStateControl(8, this);
+//
+//        curFactorialStateControl.doAllSteps();
+//
+//        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
+//    }
+//
+//    @Test
+//    public void ifactorialOfNine() {
+//        FactorialStateControl curFactorialStateControl = new FactorialStateControl(9, this);
+//
+//        curFactorialStateControl.doAllSteps();
+//
+//        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
+//    }
 
     @SuppressWarnings("unused") // stimmt nicht. dummes eclispe
     @Override

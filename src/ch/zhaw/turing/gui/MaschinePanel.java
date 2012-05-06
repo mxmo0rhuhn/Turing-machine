@@ -16,7 +16,7 @@ public class MaschinePanel extends JComponent {
 
     static int elemWidth = 20;
     static int elemHeight = 30;
-    
+
     static int schreibkopfHeight = 10;
 
     private final Character[][] bandInhalte;
@@ -37,28 +37,27 @@ public class MaschinePanel extends JComponent {
             int topOffset = (i + 1) * MaschinePanel.topOffset + i * elemHeight;
 
             g.setColor(new Color(0, 0, 0));
-// Schreibkopf
+            // Schreibkopf
             g.fillRect(16 * leftOffset + 15 * elemWidth, topOffset - schreibkopfHeight - 3, elemWidth,
                     schreibkopfHeight);
 
-// Band
+            // Band
             Character[] curTape = bandInhalte[i];
             for (int j = 0; j < curTape.length; j++) {
                 int leftOffset = (j + 1) * MaschinePanel.leftOffset + j * elemWidth;
 
-                switch(getElemAsChar(curTape, j))
-                {
+                switch (getElemAsChar(curTape, j)) {
                 case ReadWriteHead.ONE_CHAR:
-                 g.setColor(new Color(25,25,112));
-                break;
-                  case ReadWriteHead.ZERO_CHAR:
-                      g.setColor(new Color(255,0,0));
-                break;
+                    g.setColor(new Color(25, 25, 112));
+                    break;
+                case ReadWriteHead.ZERO_CHAR:
+                    g.setColor(new Color(255, 0, 0));
+                    break;
                 default:
                     g.setColor(new Color(190, 190, 190));
-                break;
+                    break;
                 }
-                
+
                 g.drawRect(leftOffset, topOffset, elemWidth, elemHeight);
                 g.drawString(getElem(curTape, j), leftOffset + elemWidth / 2 - 4, topOffset + (elemHeight / 2) + 4);
             }

@@ -21,6 +21,8 @@ public class MultiplicationStateControl implements TuringMachine {
     public static final String Q9 = "Q9";
     public static final String Q10 = "Q10";
 
+    private String curState;
+    
     private final ReadWriteHead firstRSH;
     private final ReadWriteHead secondRSH;
 
@@ -61,6 +63,17 @@ public class MultiplicationStateControl implements TuringMachine {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
+        this.listener = listener;
+    }
+    
+    
+    public MultiplicationStateControl(int multiplikator, int multiplikant, ReadWriteHead firstRSH, ReadWriteHead secondRSH,
+            ZustandsUebergansListener listener) {
+        this.firstRSH = firstRSH;
+        this.secondRSH = secondRSH;
+
+        setUpTape(multiplikator, multiplikant);
+        
         this.listener = listener;
     }
 
@@ -106,15 +119,11 @@ public class MultiplicationStateControl implements TuringMachine {
         Character fstTapeChar = tapes[0].read().charValue();
         Character sndTapeChar = tapes[1].read().charValue();
 
-        String curState = MultiplicationStateControl.Q0;
+        curState = MultiplicationStateControl.Q0;
 
         while (!akzeptierterZustand(curState)) {
-            curState = doStep(curState, fstTapeChar, sndTapeChar);
-
+            curState = doStep();
             this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptierterZustand(curState));
-
-            fstTapeChar = tapes[0].read().charValue();
-            sndTapeChar = tapes[1].read().charValue();
         }
     }
 
@@ -122,42 +131,38 @@ public class MultiplicationStateControl implements TuringMachine {
         return zustand == MultiplicationStateControl.Q10;
     }
 
-    public String doStep(String lastState, char fstTapeChar, char sndTapeChar) {
-        // printCurrentState();
+    public String doStep() {
 
-        // hier is der Switch ueber die derzeitige Konfiguration und darauf die
-        // Entscheidung fuer die naechste konfiguration.
-
+        char fstTapeChar = firstRSH.read().charValue();
+        char sndTapeChar = secondRSH.read().charValue();
+        
         String nextState;
 
-        if (lastState == MultiplicationStateControl.Q0) {
+        if (curState == MultiplicationStateControl.Q0) {
             nextState = handleQ0(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q1) {
+        } else if (curState == MultiplicationStateControl.Q1) {
             nextState = handleQ1(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q2) {
+        } else if (curState == MultiplicationStateControl.Q2) {
             nextState = handleQ2(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q3) {
+        } else if (curState == MultiplicationStateControl.Q3) {
             nextState = handleQ3(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q4) {
+        } else if (curState == MultiplicationStateControl.Q4) {
             nextState = handleQ4(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q5) {
+        } else if (curState == MultiplicationStateControl.Q5) {
             nextState = handleQ5(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q6) {
+        } else if (curState == MultiplicationStateControl.Q6) {
             nextState = handleQ6(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q7) {
+        } else if (curState == MultiplicationStateControl.Q7) {
             nextState = handleQ7(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q8) {
+        } else if (curState == MultiplicationStateControl.Q8) {
             nextState = handleQ8(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q9) {
+        } else if (curState == MultiplicationStateControl.Q9) {
             nextState = handleQ9(fstTapeChar, sndTapeChar);
-        } else if (lastState == MultiplicationStateControl.Q10) {
+        } else if (curState == MultiplicationStateControl.Q10) {
             nextState = handleQ10(fstTapeChar, sndTapeChar);
         } else {
-            throw new IllegalStateException(lastState + " existiert nicht");
+            throw new IllegalStateException(curState + " existiert nicht");
         }
-
-        // curConfiguration = new TwoTapeConfiguration(nextState, firstRSH.read(), secondRSH.read());
-        // printCurrentStateWithDirection();
 
         return nextState;
     }
