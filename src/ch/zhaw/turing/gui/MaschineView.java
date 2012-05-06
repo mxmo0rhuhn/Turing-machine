@@ -31,7 +31,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
 
     private static final int minDelay = System.getProperty("minDelay") != null ? Integer.parseInt(System
             .getProperty("minDelay")) : 200;
-    private static volatile int timeout = 1; // timeout für automatisches rechnen
+    private static volatile int timeout = 200; // timeout für automatisches rechnen
 
     private static boolean debug = false;
 
