@@ -7,6 +7,8 @@ import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
 
+import java.util.Observer;
+
 public class FactorialStateControl extends TuringMachine {
 
     public static final String Q0 = "Q0";
@@ -31,6 +33,8 @@ public class FactorialStateControl extends TuringMachine {
     private ReadWriteHead thirdRSH;
     
     private TuringMachine multiplikation;
+    
+    private Observer observer;
 
     /**
      * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und
@@ -54,6 +58,12 @@ public class FactorialStateControl extends TuringMachine {
         this.thirdRSH = thirdRSH;
 
         setUpTape(number);
+    }
+    
+    @Override
+    public synchronized void addObserver(Observer o) {
+        this.observer = o;
+        super.addObserver(o);
     }
 
     /**
@@ -249,6 +259,8 @@ public class FactorialStateControl extends TuringMachine {
             secondRSH.moveRight();
 
             multiplikation = new MultiplicationStateControl(secondRSH, thirdRSH, nuberOfSteps);
+            multiplikation.addObserver(this.observer);
+            this.observer.update(multiplikation, null);
             return MULTIPLICATION;
         } else {
             dumpTape2Exeption(FactorialStateControl.Q4, sndTapeChar);
