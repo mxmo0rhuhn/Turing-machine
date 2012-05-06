@@ -25,6 +25,8 @@ public class MultiplicationStateControl extends Observable implements TuringMach
 
     private String curState;
 
+    private int nuberOfSteps;
+    
     private final ReadWriteHead firstRSH;
     private final ReadWriteHead secondRSH;
 
@@ -63,11 +65,13 @@ public class MultiplicationStateControl extends Observable implements TuringMach
      *            der zweite Lese-Schreibkopf der Maschine
      * 
      */
-    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH,
+    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH, int nuberOfSteps,
             ZustandsUebergansListener listener) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
+        this.nuberOfSteps = nuberOfSteps;
+        
         curState = MultiplicationStateControl.Q0;
         
         this.listener = listener;
@@ -140,6 +144,8 @@ public class MultiplicationStateControl extends Observable implements TuringMach
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
+        nuberOfSteps++;
+        
         if (curState == MultiplicationStateControl.Q0) {
             curState = handleQ0(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q1) {
@@ -392,5 +398,10 @@ public class MultiplicationStateControl extends Observable implements TuringMach
         }
 
         return i;
+    }
+
+    @Override
+    public int getNumberOfSteps() {
+        return nuberOfSteps;
     }
 }

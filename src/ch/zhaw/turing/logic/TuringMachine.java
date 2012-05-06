@@ -6,4 +6,6 @@ public interface TuringMachine {
     public void doStep();
     
     public boolean acceptedState();
+    
+    public int getNumberOfSteps();
 }
