@@ -33,6 +33,8 @@ public class FactorialStateControlTest {
         }
 
         Assert.assertEquals(1, curFactorialStateControl.getFirstNumberAsInteger());
+
+        System.out.println("0!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");
     }
 
     // < 1 Sekunde
@@ -44,6 +46,7 @@ public class FactorialStateControlTest {
             curFactorialStateControl.doStep();
         }
         Assert.assertEquals(1, curFactorialStateControl.getFirstNumberAsInteger());
+        System.out.println("1!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");
     }
 
     // < 1 Sekunde
@@ -56,7 +59,8 @@ public class FactorialStateControlTest {
         }
 
         Assert.assertEquals(2, curFactorialStateControl.getFirstNumberAsInteger());
-    }
+
+        System.out.println("2!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");}
 
     // < 1 Sekunde
     @Test
@@ -68,6 +72,8 @@ public class FactorialStateControlTest {
         }
 
         Assert.assertEquals(6, curFactorialStateControl.getFirstNumberAsInteger());
+
+        System.out.println("3!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");
     }
 
     // < 1 Sekunde
@@ -80,6 +86,8 @@ public class FactorialStateControlTest {
         }
 
         Assert.assertEquals(24, curFactorialStateControl.getFirstNumberAsInteger());
+
+        System.out.println("4!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");
     }
 
     // ~1 Sekunde
@@ -92,6 +100,8 @@ public class FactorialStateControlTest {
         }
 
         Assert.assertEquals(120, curFactorialStateControl.getFirstNumberAsInteger());
+
+        System.out.println("5!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");
     }
 
     // 17 Sekunden
@@ -104,7 +114,10 @@ public class FactorialStateControlTest {
         }
 
         Assert.assertEquals(720, curFactorialStateControl.getFirstNumberAsInteger());
+
+        System.out.println("6!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");
     }
+    
 
     // 713.137 Sekunden ( ~11.883 Minuten)
     // Reto: 8 Sekunden
@@ -117,6 +130,8 @@ public class FactorialStateControlTest {
             curFactorialStateControl.doStep();
         }
         Assert.assertEquals(5040, curFactorialStateControl.getFirstNumberAsInteger());
+
+        System.out.println("7!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");
     }
 
     //
@@ -129,16 +144,9 @@ public class FactorialStateControlTest {
         }
 
         Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
+
+        System.out.println("8!: " + curFactorialStateControl.getNumberOfSteps() + " Schritte");
     }
-    //
-    // @Test
-    // public void ifactorialOfNine() {
-    // FactorialStateControl curFactorialStateControl = new FactorialStateControl(9, this);
-    //
-    // curFactorialStateControl.doAllSteps();
-    //
-    // Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
-    // }
 
     //
     // @Test
