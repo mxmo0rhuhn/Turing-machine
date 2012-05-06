@@ -1,4 +1,4 @@
-package ch.zhaw.turing.logic;
+package ch.zhaw.turing.Performance;
 
 import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_CHAR;
 import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
@@ -7,9 +7,7 @@ import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
 
-import java.util.Observer;
-
-public class FactorialStateControl extends TuringMachine {
+public class P_FactorialStateControl extends P_TuringMachine {
 
     public static final String Q0 = "Q0";
     public static final String Q1 = "Q1";
@@ -28,14 +26,12 @@ public class FactorialStateControl extends TuringMachine {
     private String curState;
     // private String nextState;
 
-    private ReadWriteHead firstRSH;
-    private ReadWriteHead secondRSH;
-    private ReadWriteHead thirdRSH;
+    private P_ReadWriteHead firstRSH;
+    private P_ReadWriteHead secondRSH;
+    private P_ReadWriteHead thirdRSH;
     
-    private TuringMachine multiplikation;
+    private P_TuringMachine multiplikation;
     
-    private Observer observer;
-
     /**
      * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und
      * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
@@ -44,26 +40,20 @@ public class FactorialStateControl extends TuringMachine {
      * @param number
      *            die Zahl deren Fakultät berechnet werden soll.
      */
-    public FactorialStateControl(int number) {
-        this.firstRSH = new ReadWriteHead();
-        this.secondRSH = new ReadWriteHead();
-        this.thirdRSH = new ReadWriteHead();
+    public P_FactorialStateControl(int number) {
+        this.firstRSH = new P_ReadWriteHead();
+        this.secondRSH = new P_ReadWriteHead();
+        this.thirdRSH = new P_ReadWriteHead();
 
         setUpTape(number);
     }
 
-    public FactorialStateControl(int number, ReadWriteHead firstRSH, ReadWriteHead secondRSH, ReadWriteHead thirdRSH) {
+    public P_FactorialStateControl(int number, P_ReadWriteHead firstRSH, P_ReadWriteHead secondRSH, P_ReadWriteHead thirdRSH) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
         this.thirdRSH = thirdRSH;
 
         setUpTape(number);
-    }
-    
-    @Override
-    public synchronized void addObserver(Observer o) {
-        this.observer = o;
-        super.addObserver(o);
     }
 
     /**
@@ -72,7 +62,7 @@ public class FactorialStateControl extends TuringMachine {
      * @param firstRSH
      */
     private void setUpTape(int number) {
-        curState = FactorialStateControl.Q0;
+        curState = P_FactorialStateControl.Q0;
         nuberOfSteps = 0;
 
         for (int i = 0; i < number; i++) {
@@ -99,7 +89,7 @@ public class FactorialStateControl extends TuringMachine {
 
     @Override
     public boolean acceptedState() {
-        return curState == FactorialStateControl.Q8 || curState == FactorialStateControl.Q7;
+        return curState == P_FactorialStateControl.Q8 || curState == P_FactorialStateControl.Q7;
     }
 
     @Override
@@ -114,8 +104,6 @@ public class FactorialStateControl extends TuringMachine {
             return;
         }
         
-        String startState = curState;
-
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
@@ -124,33 +112,28 @@ public class FactorialStateControl extends TuringMachine {
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
 
-        if (curState == FactorialStateControl.Q0) {
+        if (curState == P_FactorialStateControl.Q0) {
             curState = handleQ0(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.Q1) {
+        } else if (curState == P_FactorialStateControl.Q1) {
             curState = handleQ1(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.Q2) {
+        } else if (curState == P_FactorialStateControl.Q2) {
             curState = handleQ2(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.Q3) {
+        } else if (curState == P_FactorialStateControl.Q3) {
             curState = handleQ3(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.Q4) {
+        } else if (curState == P_FactorialStateControl.Q4) {
             curState = handleQ4(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.Q5) {
+        } else if (curState == P_FactorialStateControl.Q5) {
             curState = handleQ5(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.Q6) {
+        } else if (curState == P_FactorialStateControl.Q6) {
             curState = handleQ6(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.Q7) {
+        } else if (curState == P_FactorialStateControl.Q7) {
             curState = handleQ7(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.Q8) {
+        } else if (curState == P_FactorialStateControl.Q8) {
             curState = handleQ8(fstTapeChar, sndTapeChar);
-        } else if (curState == FactorialStateControl.MULTIPLICATION) {
+        } else if (curState == P_FactorialStateControl.MULTIPLICATION) {
             curState = handleBackFromMultiplication(fstTapeChar, sndTapeChar);
         } else {
             throw new IllegalStateException(curState + " existiert nicht!");
-        }
-
-        if (!startState.equals(curState)) {
-            setChanged();
-            notifyObservers();
         }
     }
 
@@ -159,41 +142,41 @@ public class FactorialStateControl extends TuringMachine {
             firstRSH.write(EMPTY_VALUE);
             firstRSH.moveRight();
 
-            return FactorialStateControl.Q5;
+            return P_FactorialStateControl.Q5;
         } else {
-            dumpTape1Exeption(FactorialStateControl.Q4, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q4, fstTapeChar);
             return null;
         }
     }
 
     private String handleQ8(char fstTapeChar, char sndTapeChar) {
         if (!(fstTapeChar == EMPTY_CHAR)) {
-            dumpTape1Exeption(FactorialStateControl.Q8, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q8, fstTapeChar);
         }
 
         if (!(sndTapeChar == EMPTY_CHAR)) {
-            dumpTape2Exeption(FactorialStateControl.Q8, sndTapeChar);
+            dumpTape2Exeption(P_FactorialStateControl.Q8, sndTapeChar);
         }
-        return FactorialStateControl.Q8;
+        return P_FactorialStateControl.Q8;
     }
 
     private String handleQ7(char fstTapeChar, char sndTapeChar) {
         if (!(fstTapeChar == EMPTY_CHAR)) {
-            dumpTape1Exeption(FactorialStateControl.Q7, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q7, fstTapeChar);
         }
 
         if (!(sndTapeChar == EMPTY_CHAR)) {
-            dumpTape2Exeption(FactorialStateControl.Q7, sndTapeChar);
+            dumpTape2Exeption(P_FactorialStateControl.Q7, sndTapeChar);
         }
-        return FactorialStateControl.Q7;
+        return P_FactorialStateControl.Q7;
     }
 
     private String handleQ6(char fstTapeChar, char sndTapeChar) {
-        ReadWriteHead firstRSH = this.firstRSH;
-        ReadWriteHead secondRSH = this.secondRSH;
+        P_ReadWriteHead firstRSH = this.firstRSH;
+        P_ReadWriteHead secondRSH = this.secondRSH;
 
         if (!(fstTapeChar == EMPTY_CHAR)) {
-            dumpTape1Exeption(FactorialStateControl.Q6, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q6, fstTapeChar);
         }
 
         if (sndTapeChar == ZERO_CHAR) {
@@ -203,17 +186,17 @@ public class FactorialStateControl extends TuringMachine {
             secondRSH.write(EMPTY_VALUE);
             secondRSH.moveLeft();
 
-            return FactorialStateControl.Q6;
+            return P_FactorialStateControl.Q6;
         } else if (sndTapeChar == ONE_CHAR) {
 
             secondRSH.write(EMPTY_VALUE);
             secondRSH.moveLeft();
 
-            return FactorialStateControl.Q6;
+            return P_FactorialStateControl.Q6;
         } else if (sndTapeChar == EMPTY_CHAR) {
-            return FactorialStateControl.Q7;
+            return P_FactorialStateControl.Q7;
         } else {
-            dumpTape2Exeption(FactorialStateControl.Q6, sndTapeChar);
+            dumpTape2Exeption(P_FactorialStateControl.Q6, sndTapeChar);
             return null;// FIXME richtige excpetion werfen? (runtime)
         }
     }
@@ -222,48 +205,46 @@ public class FactorialStateControl extends TuringMachine {
         if (fstTapeChar == ZERO_CHAR) {
             firstRSH.moveRight();
 
-            return FactorialStateControl.Q5;
+            return P_FactorialStateControl.Q5;
         } else if (fstTapeChar == EMPTY_CHAR) {
             firstRSH.moveLeft();
 
             secondRSH.write(ONE_VALUE);
             secondRSH.moveRight();
 
-            return FactorialStateControl.Q2;
+            return P_FactorialStateControl.Q2;
         } else {
-            dumpTape1Exeption(FactorialStateControl.Q5, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q5, fstTapeChar);
             return null;
         }
     }
 
     private String handleQ4(char fstTapeChar, char sndTapeChar) {
-        ReadWriteHead firstRSH = this.firstRSH;
-        ReadWriteHead secondRSH = this.secondRSH;
+        P_ReadWriteHead firstRSH = this.firstRSH;
+        P_ReadWriteHead secondRSH = this.secondRSH;
 
         if (!(fstTapeChar == EMPTY_CHAR)) {
-            dumpTape1Exeption(FactorialStateControl.Q4, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q4, fstTapeChar);
         }
 
         if (sndTapeChar == ZERO_CHAR) {
             secondRSH.moveLeft();
 
-            return FactorialStateControl.Q4;
+            return P_FactorialStateControl.Q4;
         } else if (sndTapeChar == ONE_CHAR) {
             secondRSH.moveLeft();
 
-            return FactorialStateControl.Q4;
+            return P_FactorialStateControl.Q4;
         } else if (sndTapeChar == EMPTY_CHAR) {
             firstRSH.moveRight();
 
             // Auf erstes Zeichen stellen
             secondRSH.moveRight();
 
-            multiplikation = new MultiplicationStateControl(secondRSH, thirdRSH, nuberOfSteps);
-            multiplikation.addObserver(this.observer);
-            this.observer.update(multiplikation, null);
+            multiplikation = new P_MultiplicationStateControl(secondRSH, thirdRSH, nuberOfSteps);
             return MULTIPLICATION;
         } else {
-            dumpTape2Exeption(FactorialStateControl.Q4, sndTapeChar);
+            dumpTape2Exeption(P_FactorialStateControl.Q4, sndTapeChar);
             return null;
         }
     }
@@ -275,15 +256,15 @@ public class FactorialStateControl extends TuringMachine {
             secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            return FactorialStateControl.Q3;
+            return P_FactorialStateControl.Q3;
         } else if (fstTapeChar == EMPTY_CHAR) {
 
             secondRSH.write(ONE_VALUE);
             secondRSH.moveLeft();
 
-            return FactorialStateControl.Q4;
+            return P_FactorialStateControl.Q4;
         } else {
-            dumpTape1Exeption(FactorialStateControl.Q3, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q3, fstTapeChar);
             return null;
         }
     }
@@ -295,20 +276,20 @@ public class FactorialStateControl extends TuringMachine {
             secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            return FactorialStateControl.Q3;
+            return P_FactorialStateControl.Q3;
         } else if (fstTapeChar == EMPTY_CHAR) {
             secondRSH.moveLeft();
 
-            return FactorialStateControl.Q6;
+            return P_FactorialStateControl.Q6;
         } else {
-            dumpTape1Exeption(FactorialStateControl.Q2, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q2, fstTapeChar);
             return null;
         }
     }
 
     private String handleQ1(char fstTapeChar, char sndTapeChar) {
-        ReadWriteHead firstRSH = this.firstRSH;
-        ReadWriteHead secondRSH = this.secondRSH;
+        P_ReadWriteHead firstRSH = this.firstRSH;
+        P_ReadWriteHead secondRSH = this.secondRSH;
 
         if (fstTapeChar == ZERO_VALUE.charValue()) {
             firstRSH.moveRight();
@@ -316,7 +297,7 @@ public class FactorialStateControl extends TuringMachine {
             secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            return FactorialStateControl.Q1;
+            return P_FactorialStateControl.Q1;
         } else if (fstTapeChar == ONE_VALUE.charValue()) {
             firstRSH.write(EMPTY_VALUE);
             firstRSH.moveLeft();
@@ -324,9 +305,9 @@ public class FactorialStateControl extends TuringMachine {
             secondRSH.write(ONE_VALUE);
             secondRSH.moveRight();
 
-            return FactorialStateControl.Q2;
+            return P_FactorialStateControl.Q2;
         } else {
-            dumpTape1Exeption(FactorialStateControl.Q1, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q1, fstTapeChar);
             return null;
         }
     }
@@ -339,13 +320,13 @@ public class FactorialStateControl extends TuringMachine {
             secondRSH.write(ZERO_VALUE);
             secondRSH.moveRight();
 
-            return FactorialStateControl.Q1;
+            return P_FactorialStateControl.Q1;
         } else if (fstTapeChar == ONE_CHAR) {
             firstRSH.write(ZERO_VALUE);
 
-            return FactorialStateControl.Q8;
+            return P_FactorialStateControl.Q8;
         } else {
-            dumpTape1Exeption(FactorialStateControl.Q0, fstTapeChar);
+            dumpTape1Exeption(P_FactorialStateControl.Q0, fstTapeChar);
             return null;
         }
     }
