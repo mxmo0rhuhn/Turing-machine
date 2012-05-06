@@ -1,17 +1,15 @@
 package ch.zhaw.turing.logic;
 
-import java.util.Observer;
+import java.util.Observable;
 
 
-public interface TuringMachine {
+public abstract class TuringMachine extends Observable {
     
-    public void doStep();
+    public abstract void doStep();
     
-    public boolean acceptedState();
+    public abstract boolean acceptedState();
     
-    public int getNumberOfSteps();
+    public abstract int getNumberOfSteps();
     
-    public void addObserver(Observer o);
-    
-    public String getCurrentState();
+    public abstract String getCurrentState();
 }

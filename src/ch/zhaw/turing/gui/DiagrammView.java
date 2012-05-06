@@ -69,7 +69,6 @@ public class DiagrammView extends JFrame implements Observer {
 
         try {
             this.bufImage = ImageIO.read(imgPath);
-            
             repaint();
         } catch (IOException e) {
             throw new RuntimeException(e);

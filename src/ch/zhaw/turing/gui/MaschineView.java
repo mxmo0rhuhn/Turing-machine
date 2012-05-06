@@ -271,7 +271,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             machine = fakultaet();
         }
         if (machine != null) {
-            machine.addObserver(new DiagrammView());
+            DiagrammView v = new DiagrammView();
+            v.update(machine, null);
+            machine.addObserver(v);
         }
     }
 
