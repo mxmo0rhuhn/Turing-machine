@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -169,9 +168,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
         secondRWHPanel.setRWH(secondRWH);
         thirdRWHPanel.setRWH(thirdRWH);
 
-        firstRWH.addObserver((Observer) firstRWHPanel);
-        secondRWH.addObserver((Observer) secondRWHPanel);
-        thirdRWH.addObserver((Observer) thirdRWHPanel);
+        firstRWH.addObserver(firstRWHPanel);
+        secondRWH.addObserver(secondRWHPanel);
+        thirdRWH.addObserver(thirdRWHPanel);
 
         centerJPanel.add(firstRWHPanel);
         centerJPanel.add(secondRWHPanel);
@@ -272,6 +271,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
         } else if (FAKULTAET_MENU_EINTRAG.equals(menuItem.getText())) {
             machine = fakultaet();
         }
+        machine.addObserver(new DiagrammView());
     }
 
     @Override
