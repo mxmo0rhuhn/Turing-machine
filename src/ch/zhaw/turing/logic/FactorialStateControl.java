@@ -7,7 +7,9 @@ import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
 import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
 
-public class FactorialStateControl implements TuringMachine {
+import java.util.Observable;
+
+public class FactorialStateControl extends Observable implements TuringMachine {
 
     public static final String Q0 = "Q0";
     public static final String Q1 = "Q1";
