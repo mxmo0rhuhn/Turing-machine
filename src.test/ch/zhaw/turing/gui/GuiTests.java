@@ -1,7 +1,5 @@
 package ch.zhaw.turing.gui;
 
-import org.junit.Test;
-
 public class GuiTests {
 
     Character[] empty = new Character[0];
@@ -45,20 +43,20 @@ public class GuiTests {
 //        result = MaschineView.get30Chars(char1_14, '1', char0_14);
 //        compare("B11111111111111100000000000000B", result);
 //    }
-
-    private void compare(String string, Character[] result) {
-        if (result.length != 31) {
-            throw new AssertionError("Resultat muss 31 Zeichen lang sein..");
-        } else if (string.length() != 31) {
-            throw new AssertionError("String muss 31 Zeichen lang sein..");
-        }
-        char[] expected = string.toCharArray();
-        for (int i = 0; i < expected.length; i++) {
-            if (expected[i] != result[i].charValue()) {
-                throw new AssertionError("Expected [" + string + "] but got [" + toString(result) + "] instead!");
-            }
-        }
-    }
+//
+//    private void compare(String string, Character[] result) {
+//        if (result.length != 31) {
+//            throw new AssertionError("Resultat muss 31 Zeichen lang sein..");
+//        } else if (string.length() != 31) {
+//            throw new AssertionError("String muss 31 Zeichen lang sein..");
+//        }
+//        char[] expected = string.toCharArray();
+//        for (int i = 0; i < expected.length; i++) {
+//            if (expected[i] != result[i].charValue()) {
+//                throw new AssertionError("Expected [" + string + "] but got [" + toString(result) + "] instead!");
+//            }
+//        }
+//    }
 
     private String toString(Character[] characters) {
         StringBuilder sb = new StringBuilder();
