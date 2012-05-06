@@ -122,7 +122,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
         panel.add(stop);
         return panel;
     }
-    
+
     private void calcAutomatichWithTimeout() {
         new Thread(new Runnable() {
 
@@ -130,7 +130,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             public void run() {
                 while (automatic && !machine.acceptedState()) {
                     machine.doStep();
-                    
+
                     if (machine.acceptedState()) {
                         showResult();
                     } else {
@@ -141,10 +141,10 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
                             Thread.interrupted();
                         }
                     }
-                    
+
                 }
             }
-            
+
         }).start();
     }
 
@@ -255,8 +255,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             thirdRWH.clear();
 
             this.infoLabel.setText(String.format("Rechne: %s mal %s", zahl1, zahl2));
-            return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), firstRWH,
-                    secondRWH);
+            return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), firstRWH, secondRWH);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
             return null;
@@ -271,7 +270,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
         } else if (FAKULTAET_MENU_EINTRAG.equals(menuItem.getText())) {
             machine = fakultaet();
         }
-        machine.addObserver(new DiagrammView());
+        if (machine != null) {
+            machine.addObserver(new DiagrammView());
+        }
     }
 
     @Override

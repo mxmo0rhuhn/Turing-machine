@@ -12,4 +12,6 @@ public interface TuringMachine {
     public int getNumberOfSteps();
     
     public void addObserver(Observer o);
+    
+    public String getCurrentState();
 }

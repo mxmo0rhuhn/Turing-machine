@@ -356,4 +356,9 @@ public class FactorialStateControl extends Observable implements TuringMachine {
         return nuberOfSteps;
     }
 
+    @Override
+    public String getCurrentState() {
+        return this.curState;
+    }
+
 }

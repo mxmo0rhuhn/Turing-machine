@@ -399,4 +399,9 @@ public class MultiplicationStateControl extends Observable implements TuringMach
     public int getNumberOfSteps() {
         return nuberOfSteps;
     }
+
+    @Override
+    public String getCurrentState() {
+        return this.curState;
+    }
 }
