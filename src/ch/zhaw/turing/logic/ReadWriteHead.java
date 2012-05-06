@@ -156,13 +156,16 @@ public final class ReadWriteHead extends Observable{
             moveRight();
             i++;
         }
-
         return i;
     }
     
     public void clear() {
+        lastMove = Direction.STAY;
         curChar = EMPTY_VALUE;
         prefix = new NeverNeverEnd();
         suffix = new NeverNeverEnd();
+        
+        setChanged();
+        notifyObservers();
     }
 }
