@@ -11,6 +11,6 @@ public interface ZustandsUebergansListener {
      * 
      * @param tapes alles, was darstellt werden soll
      */
-    public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes, boolean akzeptiert);
+    public void inNeuenZustandGewechselt(String zustand, boolean akzeptiert);
 
 }

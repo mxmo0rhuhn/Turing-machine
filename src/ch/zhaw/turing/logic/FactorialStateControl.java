@@ -20,12 +20,16 @@ public class FactorialStateControl implements TuringMachine {
     public static final String Q8 = "Q8";
 
     private String curState;
+    private String nextState;
 
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
     private ReadWriteHead thirdRSH;
 
     private final ZustandsUebergansListener listener;
+
+    // der Listener für die Multiplikation
+    private final ZustandsUebergansListener multListener;
 
     /**
      * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und
@@ -41,27 +45,31 @@ public class FactorialStateControl implements TuringMachine {
         this.thirdRSH = new ReadWriteHead();
 
         this.listener = listener;
+        multListener = listener;
 
         setUpTape(number);
     }
 
     public FactorialStateControl(int number, ReadWriteHead firstRSH, ReadWriteHead secondRSH, ReadWriteHead thirdRSH,
-            ZustandsUebergansListener listener) {
+            ZustandsUebergansListener listener, ZustandsUebergansListener multListener) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
         this.thirdRSH = thirdRSH;
 
+        this.multListener = multListener;
         this.listener = listener;
 
         setUpTape(number);
     }
 
     /**
-     *
+     * 
      * @param number
      * @param firstRSH
      */
     private void setUpTape(int number) {
+        nextState = FactorialStateControl.Q0;
+
         for (int i = 0; i < number; i++) {
             firstRSH.write('0');
             firstRSH.moveRight();
@@ -78,29 +86,27 @@ public class FactorialStateControl implements TuringMachine {
     }
 
     public void doAllSteps() {
-        ReadWriteHead[] tapes = new ReadWriteHead[] { this.firstRSH, this.secondRSH };
 
-        // Startzustand
-        curState = FactorialStateControl.Q0;
-
-        while (!akzeptierterZustand(curState)) {
-            curState = doStep();
-            this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptierterZustand(curState));
+        while (!acceptedState()) {
+            doStep();
         }
     }
 
-    private static boolean akzeptierterZustand(String zustand) {
-        return zustand == FactorialStateControl.Q8 || zustand == FactorialStateControl.Q7;
+    @Override
+    public boolean acceptedState() {
+        return curState == FactorialStateControl.Q8 || curState == FactorialStateControl.Q7;
     }
 
-    public String doStep() {
+    @Override
+    public void doStep() {
 
+        curState = nextState;
+        this.listener.inNeuenZustandGewechselt(curState, acceptedState());
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
-        String nextState;
 
         if (curState == FactorialStateControl.Q0) {
             nextState = handleQ0(fstTapeChar, sndTapeChar);
@@ -123,8 +129,6 @@ public class FactorialStateControl implements TuringMachine {
         } else {
             throw new IllegalStateException(curState + " existiert nicht!");
         }
-
-        return nextState;
     }
 
     private String handleQ8(char fstTapeChar, char sndTapeChar) {
@@ -220,28 +224,7 @@ public class FactorialStateControl implements TuringMachine {
             secondRSH.moveRight();
 
             MultiplicationStateControl myMultiplicationStateControl = new MultiplicationStateControl(secondRSH,
-                    thirdRSH, new ZustandsUebergansListener() {
-
-                        @Override
-                        public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes, boolean akzeptierend) {
-                            // events von der multiplikation einfach
-                            // weiterleiten..
-                            // aber dort gibs nur zwei baender, also muessen wir
-                            // das noch
-                            // etwas umbiegen, dass dieser listener mit dem
-                            // umgehen kann.
-                            // eigentlich sind die zwei tapes von der
-                            // multiplikation in diesem
-                            // fall wieder die gleichen, aber das keonnte sich
-                            // ja wechseln..
-                            // obowhl.. vieles koennte sich wechseln.
-                            ReadWriteHead[] facTapes = new ReadWriteHead[] { tapes[0], tapes[1], thirdRSH };
-                            // es waere zwar ein akzpetierender zustand fuer die
-                            // multiplikation, aber fuer die fakultaet
-                            // ist das noch nicht akzeptierend..
-                            listener.inNeuenZustandGewechselt(zustand, facTapes, false);
-                        }
-                    });
+                    thirdRSH, multListener);
             myMultiplicationStateControl.doAllSteps();
 
             if (firstRSH.read().charValue() == ZERO_CHAR) {
@@ -342,11 +325,11 @@ public class FactorialStateControl implements TuringMachine {
     }
 
     private void dumpTape2Exeption(String zustand, char sndTapeChar) {
-        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 2:" + sndTapeChar);
+        System.err.println("Fakultät Zustand: " + zustand + " Ungültiger Buchstabe auf Band 2:" + sndTapeChar);
     }
 
     private void dumpTape1Exeption(String zustand, char fstTapeChar) {
-        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:" + fstTapeChar);
+        System.err.println("Fakultät Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:" + fstTapeChar);
     }
 
     int getFirstNumberAsInteger() {

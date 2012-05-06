@@ -84,6 +84,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
 
     // 713.137 Sekunden ( ~11.883 Minuten)
     // Reto: 8 Sekunden
+    // Max... wieder auf 24sek hoch...
     @Test
     public void hfactorialOfSeven() {
         FactorialStateControl curFactorialStateControl = new FactorialStateControl(7, this);
@@ -114,15 +115,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
 
     @SuppressWarnings("unused") // stimmt nicht. dummes eclispe
     @Override
-    public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes, boolean akzeptierend) {
-        if (!debug) {
-            return;
-        }
-        
-        System.out.println("Neuer Zustand: " + zustand);
-        for (ReadWriteHead rwHead : tapes) {
-            System.out.println(rwHead);
-        }
+    public void inNeuenZustandGewechselt(String zustand, boolean akzeptierend) {
     }
 
     //

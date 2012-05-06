@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,8 +20,6 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.sun.org.apache.xerces.internal.impl.RevalidationHandler;
-
 import ch.zhaw.turing.logic.FactorialStateControl;
 import ch.zhaw.turing.logic.MultiplicationStateControl;
 import ch.zhaw.turing.logic.ReadWriteHead;
@@ -37,8 +32,9 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
             .getProperty("minDelay")) : 200;
     static volatile int timeout = 1;
 
-    static boolean debug = true;
+    static boolean debug = false;
     static volatile boolean pausiert = false;
+    static volatile boolean stop = true;
 
     private static final String MULTIPLIZIEREN_MENU_EINTRAG = "Multiplizieren";
     private static final String FAKULTAET_MENU_EINTRAG = "Fakultät";
@@ -203,8 +199,15 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
         this.turingThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                stop = false;
                 steps = new AtomicInteger();
-                m.doAllSteps();
+                while(!stop && !m.acceptedState())
+                {
+                    while(!stop && !m.acceptedState() && !pausiert)
+                    {
+                        m.doStep();
+                    }
+                }
             }
         });
         this.turingThread.start();
@@ -213,13 +216,14 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
     private TuringMachine fakultaet() {
         String eingabe = JOptionPane.showInputDialog("Geben Sie eine Zahl ein: ");
         try {
+            stop = true;
             this.infoLabel.setText(String.format("Rechne %s!", eingabe.trim()));
            
             firstRWH.clear();
             secondRWH.clear();
             thirdRWH.clear();
 
-            return new FactorialStateControl(Integer.parseInt(eingabe.trim()), firstRWH, secondRWH, thirdRWH, this);
+            return new FactorialStateControl(Integer.parseInt(eingabe.trim()), firstRWH, secondRWH, thirdRWH, this, this);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Fehler: " + e.getMessage(),
@@ -231,6 +235,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
     private TuringMachine multipliziere() {
         String eingabe = JOptionPane.showInputDialog("Geben Sie zwei Zahlen ein (z.B. '13 10'): ");
         try {
+            stop = true;
             String[] parts = eingabe.split(" ");
             String zahl1 = parts[0].trim();
             String zahl2 = parts[1].trim();
@@ -246,17 +251,6 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
              JOptionPane.showMessageDialog(this, "Fehler: " + e.getMessage(),
              "Fehler", JOptionPane.ERROR_MESSAGE);
             return null;
-        }
-    }
-
-    private void sollenWirMalPauseMachen() {
-        while (pausiert) {
-            try {
-                debug("pause machen..");
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.interrupted();
-            }
         }
     }
 
@@ -276,8 +270,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
     }
 
     @Override
-    public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes, boolean akzeptiert) {
-        sollenWirMalPauseMachen();
+    public void inNeuenZustandGewechselt(String zustand, boolean akzeptiert) {
         debug("Neuer Zustand: " + zustand);
 
         int steps = MaschineView.steps.incrementAndGet();
@@ -285,7 +278,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
 
         String msg = null;
         if (akzeptiert) {
-            msg = "Das Resultat ist: " + tapes[0].getResultat();
+            msg = "Das Resultat ist: " + firstRWH.getResultat();
         }
 
         infoLabel.setText(msg);
@@ -308,5 +301,4 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
             System.out.println(message);
         }
     }
-
 }

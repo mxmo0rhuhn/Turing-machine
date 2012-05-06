@@ -40,14 +40,7 @@ public class MultiplicationStateControlTest implements ZustandsUebergansListener
     }
 
     @Override
-    public void inNeuenZustandGewechselt(String zustand, ReadWriteHead[] tapes, boolean akzeptierend) {
-        if (!debug) {
-            return;
-        }
-        System.out.println("Neuer Zustand: " + zustand);
-        for (ReadWriteHead rwHead : tapes) {
-            System.out.println(rwHead);
-        }
+    public void inNeuenZustandGewechselt(String zustand, boolean akzeptierend) {
     }
 
 }

@@ -22,15 +22,17 @@ public class MultiplicationStateControl implements TuringMachine {
     public static final String Q10 = "Q10";
 
     private String curState;
-    
+
     private final ReadWriteHead firstRSH;
     private final ReadWriteHead secondRSH;
 
     private final ZustandsUebergansListener listener;
 
     /**
-     * Erstellt eine neue Zustandssteuerung für die Multiplikation und initialisiert das Band. Die Position des
-     * LS-Kopfes ist danach genau auf dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben erstellt.
+     * Erstellt eine neue Zustandssteuerung für die Multiplikation und
+     * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
+     * dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben
+     * erstellt.
      * 
      * @param multiplikator
      *            linke Zahl der Multiplikation.
@@ -47,10 +49,11 @@ public class MultiplicationStateControl implements TuringMachine {
     }
 
     /**
-     * Erstellt eine neue Zustandssteuerung für die Multiplikation die genau die mitgegebenen Bänder nutzt.
+     * Erstellt eine neue Zustandssteuerung für die Multiplikation die genau die
+     * mitgegebenen Bänder nutzt.
      * 
-     * Die Position des LS-Kopfes des oberen Bandes muss dazu genau auf dem ersten Zeichen der Eingabe sein. Das Zweite
-     * Band muss leer sein.
+     * Die Position des LS-Kopfes des oberen Bandes muss dazu genau auf dem
+     * ersten Zeichen der Eingabe sein. Das Zweite Band muss leer sein.
      * 
      * @param firstRSH
      *            der erste Lese-Schreibkopf der Maschine
@@ -63,17 +66,18 @@ public class MultiplicationStateControl implements TuringMachine {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
+        curState = MultiplicationStateControl.Q0;
+        
         this.listener = listener;
     }
-    
-    
-    public MultiplicationStateControl(int multiplikator, int multiplikant, ReadWriteHead firstRSH, ReadWriteHead secondRSH,
-            ZustandsUebergansListener listener) {
+
+    public MultiplicationStateControl(int multiplikator, int multiplikant, ReadWriteHead firstRSH,
+            ReadWriteHead secondRSH, ZustandsUebergansListener listener) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
         setUpTape(multiplikator, multiplikant);
-        
+
         this.listener = listener;
     }
 
@@ -84,6 +88,8 @@ public class MultiplicationStateControl implements TuringMachine {
      * @param firstRSH
      */
     private void setUpTape(int multiplikator, int multiplikant) {
+        curState = MultiplicationStateControl.Q0;
+
         for (int i = 0; i < multiplikator; i++) {
             firstRSH.write(ZERO_VALUE);
             firstRSH.moveRight();
@@ -110,61 +116,55 @@ public class MultiplicationStateControl implements TuringMachine {
     }
 
     /**
-     * Führt alle Schritte der Multiplikation aus. Am Ende der Berechnung steht der Lese- Schreibkopf des oberen Bandes
-     * hinter der letzten Stelle der multiplizierten Zahl.
+     * Führt alle Schritte der Multiplikation aus. Am Ende der Berechnung steht
+     * der Lese- Schreibkopf des oberen Bandes hinter der letzten Stelle der
+     * multiplizierten Zahl.
      */
     public void doAllSteps() {
-        ReadWriteHead[] tapes = new ReadWriteHead[] { this.firstRSH, this.secondRSH };
 
-        Character fstTapeChar = tapes[0].read().charValue();
-        Character sndTapeChar = tapes[1].read().charValue();
-
-        curState = MultiplicationStateControl.Q0;
-
-        while (!akzeptierterZustand(curState)) {
-            curState = doStep();
-            this.listener.inNeuenZustandGewechselt(curState, tapes, akzeptierterZustand(curState));
+        while (!acceptedState()) {
+            doStep();
         }
     }
 
-    private static boolean akzeptierterZustand(String zustand) {
-        return zustand == MultiplicationStateControl.Q10;
+    @Override
+    public boolean acceptedState() {
+        return curState == MultiplicationStateControl.Q10;
     }
 
-    public String doStep() {
+     @Override
+    public void doStep() {
 
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
-        
-        String nextState;
 
         if (curState == MultiplicationStateControl.Q0) {
-            nextState = handleQ0(fstTapeChar, sndTapeChar);
+            curState = handleQ0(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q1) {
-            nextState = handleQ1(fstTapeChar, sndTapeChar);
+            curState = handleQ1(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q2) {
-            nextState = handleQ2(fstTapeChar, sndTapeChar);
+            curState = handleQ2(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q3) {
-            nextState = handleQ3(fstTapeChar, sndTapeChar);
+            curState = handleQ3(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q4) {
-            nextState = handleQ4(fstTapeChar, sndTapeChar);
+            curState = handleQ4(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q5) {
-            nextState = handleQ5(fstTapeChar, sndTapeChar);
+            curState = handleQ5(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q6) {
-            nextState = handleQ6(fstTapeChar, sndTapeChar);
+            curState = handleQ6(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q7) {
-            nextState = handleQ7(fstTapeChar, sndTapeChar);
+            curState = handleQ7(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q8) {
-            nextState = handleQ8(fstTapeChar, sndTapeChar);
+            curState = handleQ8(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q9) {
-            nextState = handleQ9(fstTapeChar, sndTapeChar);
+            curState = handleQ9(fstTapeChar, sndTapeChar);
         } else if (curState == MultiplicationStateControl.Q10) {
-            nextState = handleQ10(fstTapeChar, sndTapeChar);
+            curState = handleQ10(fstTapeChar, sndTapeChar);
         } else {
             throw new IllegalStateException(curState + " existiert nicht");
         }
 
-        return nextState;
+        this.listener.inNeuenZustandGewechselt(curState, acceptedState());
     }
 
     private String handleQ10(char fstTapeChar, char sndTapeChar) {
@@ -366,11 +366,11 @@ public class MultiplicationStateControl implements TuringMachine {
     }
 
     private void dumpTape2Exeption(String zustand, char sndTapeChar) {
-        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 2:" + sndTapeChar);
+        System.err.println("Multiplikation Zustand: " + zustand + " Ungültiger Buchstabe auf Band 2:" + sndTapeChar);
     }
 
     private void dumpTape1Exeption(String zustand, char fstTapeChar) {
-        System.err.println("Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:" + fstTapeChar);
+        System.err.println("Multiplikation Zustand: " + zustand + " Ungültiger Buchstabe auf Band 1:" + fstTapeChar);
     }
 
     int getFirstNumberAsInteger() {
