@@ -22,9 +22,8 @@ import ch.zhaw.turing.logic.FactorialStateControl;
 import ch.zhaw.turing.logic.MultiplicationStateControl;
 import ch.zhaw.turing.logic.ReadWriteHead;
 import ch.zhaw.turing.logic.TuringMachine;
-import ch.zhaw.turing.logic.ZustandsUebergansListener;
 
-public class MaschineView extends JFrame implements ActionListener, ZustandsUebergansListener, ChangeListener {
+public class MaschineView extends JFrame implements ActionListener, ChangeListener {
 
     private static final long serialVersionUID = 603352769158705835L;
 
@@ -237,8 +236,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
             secondRWH.clear();
             thirdRWH.clear();
 
-            return new FactorialStateControl(Integer.parseInt(eingabe.trim()), firstRWH, secondRWH, thirdRWH, this,
-                    this);
+            return new FactorialStateControl(Integer.parseInt(eingabe.trim()), firstRWH, secondRWH, thirdRWH);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -259,7 +257,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
 
             this.infoLabel.setText(String.format("Rechne: %s mal %s", zahl1, zahl2));
             return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), firstRWH,
-                    secondRWH, this);
+                    secondRWH);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
             return null;
@@ -286,11 +284,5 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
         if (debug) {
             System.out.println(message);
         }
-    }
-
-    @Override
-    public void inNeuenZustandGewechselt(String zustand, boolean akzeptiert) {
-        // TODO Auto-generated method stub
-        
     }
 }

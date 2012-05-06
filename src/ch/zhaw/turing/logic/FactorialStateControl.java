@@ -22,18 +22,13 @@ public class FactorialStateControl extends Observable implements TuringMachine {
     public static final String Q8 = "Q8";
 
     private int nuberOfSteps;
-    
+
     private String curState;
-    //private String nextState;
+    // private String nextState;
 
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
     private ReadWriteHead thirdRSH;
-
-    private final ZustandsUebergansListener listener;
-
-    // der Listener für die Multiplikation
-    private final ZustandsUebergansListener multListener;
 
     /**
      * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und
@@ -43,25 +38,18 @@ public class FactorialStateControl extends Observable implements TuringMachine {
      * @param number
      *            die Zahl deren Fakultät berechnet werden soll.
      */
-    public FactorialStateControl(int number, ZustandsUebergansListener listener) {
+    public FactorialStateControl(int number) {
         this.firstRSH = new ReadWriteHead();
         this.secondRSH = new ReadWriteHead();
         this.thirdRSH = new ReadWriteHead();
 
-        this.listener = listener;
-        multListener = listener;
-
         setUpTape(number);
     }
 
-    public FactorialStateControl(int number, ReadWriteHead firstRSH, ReadWriteHead secondRSH, ReadWriteHead thirdRSH,
-            ZustandsUebergansListener listener, ZustandsUebergansListener multListener) {
+    public FactorialStateControl(int number, ReadWriteHead firstRSH, ReadWriteHead secondRSH, ReadWriteHead thirdRSH) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
         this.thirdRSH = thirdRSH;
-
-        this.multListener = multListener;
-        this.listener = listener;
 
         setUpTape(number);
     }
@@ -104,12 +92,13 @@ public class FactorialStateControl extends Observable implements TuringMachine {
 
     @Override
     public void doStep() {
+        String startState = curState;
 
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
         nuberOfSteps++;
-        
+
         // hier is der Switch ueber die derzeitige Konfiguration und darauf die
         // Entscheidung fuer die naechste konfiguration.
 
@@ -134,8 +123,11 @@ public class FactorialStateControl extends Observable implements TuringMachine {
         } else {
             throw new IllegalStateException(curState + " existiert nicht!");
         }
-        
-        this.listener.inNeuenZustandGewechselt(curState, acceptedState());
+
+        if (!startState.equals(curState)) {
+            setChanged();
+            notifyObservers();
+        }
     }
 
     private String handleQ8(char fstTapeChar, char sndTapeChar) {
@@ -231,10 +223,10 @@ public class FactorialStateControl extends Observable implements TuringMachine {
             secondRSH.moveRight();
 
             MultiplicationStateControl myMultiplicationStateControl = new MultiplicationStateControl(secondRSH,
-                    thirdRSH, nuberOfSteps, multListener);
+                    thirdRSH, nuberOfSteps);
             myMultiplicationStateControl.doAllSteps();
             nuberOfSteps = myMultiplicationStateControl.getNumberOfSteps();
-            
+
             if (firstRSH.read().charValue() == ZERO_CHAR) {
                 firstRSH.write(EMPTY_VALUE);
                 firstRSH.moveRight();
@@ -358,7 +350,7 @@ public class FactorialStateControl extends Observable implements TuringMachine {
 
         return i;
     }
-    
+
     @Override
     public int getNumberOfSteps() {
         return nuberOfSteps;

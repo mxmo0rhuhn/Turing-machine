@@ -42,11 +42,7 @@ public final class ReadWriteHead extends Observable{
     }
 
     void moveRight() {
-// Wozu?
-//        Deque<Character> prefix = this.prefix;
-//        Deque<Character> suffix = this.suffix;
-
-        Character curChar = this.curChar;
+       Character curChar = this.curChar;
         
         if (curChar.charValue() != EMPTY_CHAR) {
             prefix.push(curChar);
@@ -59,10 +55,6 @@ public final class ReadWriteHead extends Observable{
     }
 
     void moveLeft() {
-// Wozu?        
-//        Deque<Character> prefix = this.prefix;
-//        Deque<Character> suffix = this.suffix;
-
         Character curChar = this.curChar;
         if (curChar.charValue() != EMPTY_CHAR) {
             suffix.push(curChar);
@@ -76,15 +68,14 @@ public final class ReadWriteHead extends Observable{
 
     void write(Character newCharacter) {
         this.curChar = newCharacter;
-//        this.lastMove = Direction.STAY;
         
         setChanged();
         notifyObservers();
     }
 
     public Character read() {
-        setChanged();
-        notifyObservers();
+//        setChanged();
+//        notifyObservers();
         
         return this.curChar;
     }

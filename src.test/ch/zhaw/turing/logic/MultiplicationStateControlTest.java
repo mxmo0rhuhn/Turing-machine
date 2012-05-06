@@ -8,7 +8,7 @@ import org.junit.Test;
  * 
  * @author Max Schrimpf
  */
-public class MultiplicationStateControlTest implements ZustandsUebergansListener {
+public class MultiplicationStateControlTest {
 
     private static final boolean debug = false;
 
@@ -33,14 +33,9 @@ public class MultiplicationStateControlTest implements ZustandsUebergansListener
     }
 
     private boolean multiplikationKorrekt(int a, int b) {
-        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(a, b, this);
+        MultiplicationStateControl curMultiplicationStateControl = new MultiplicationStateControl(a, b);
         curMultiplicationStateControl.doAllSteps();
         int result = curMultiplicationStateControl.getFirstNumberAsInteger();
         return result == a * b;
     }
-
-    @Override
-    public void inNeuenZustandGewechselt(String zustand, boolean akzeptierend) {
-    }
-
 }

@@ -8,14 +8,12 @@ import org.junit.Test;
  * 
  * @author Max Schrimpf
  */
-public class FactorialStateControlTest implements ZustandsUebergansListener {
-
-    private static final boolean debug = false;
+public class FactorialStateControlTest {
 
     // < 1 Sekunde
     @Test
     public void afactorialOfZero() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(0, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(0);
 
         curFactorialStateControl.doAllSteps();
 
@@ -25,7 +23,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
     // < 1 Sekunde
     @Test
     public void bfactorialOfOne() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(1, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(1);
 
         curFactorialStateControl.doAllSteps();
 
@@ -35,7 +33,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
     // < 1 Sekunde
     @Test
     public void cfactorialOfTwo() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(2, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(2);
 
         curFactorialStateControl.doAllSteps();
 
@@ -45,7 +43,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
     // < 1 Sekunde
     @Test
     public void dfactorialOfThree() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(3, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(3);
 
         curFactorialStateControl.doAllSteps();
 
@@ -55,7 +53,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
     // < 1 Sekunde
     @Test
     public void efactorialOfFour() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(4, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(4);
 
         curFactorialStateControl.doAllSteps();
 
@@ -65,7 +63,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
     // ~1 Sekunde
     @Test
     public void ffactorialOfFive() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(5, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(5);
 
         curFactorialStateControl.doAllSteps();
 
@@ -75,7 +73,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
     // 17 Sekunden
     @Test
     public void gfactorialOfSix() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(6, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(6);
 
         curFactorialStateControl.doAllSteps();
 
@@ -87,7 +85,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
     // Max... wieder auf 24sek hoch...
     @Test
     public void hfactorialOfSeven() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(7, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(7);
 
         curFactorialStateControl.doAllSteps();
 
@@ -97,7 +95,7 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
 //
     @Test
     public void ifactorialOfEight() {
-        FactorialStateControl curFactorialStateControl = new FactorialStateControl(8, this);
+        FactorialStateControl curFactorialStateControl = new FactorialStateControl(8);
 
         curFactorialStateControl.doAllSteps();
 
@@ -112,11 +110,6 @@ public class FactorialStateControlTest implements ZustandsUebergansListener {
 //
 //        Assert.assertEquals(40320, curFactorialStateControl.getFirstNumberAsInteger());
 //    }
-
-    @SuppressWarnings("unused") // stimmt nicht. dummes eclispe
-    @Override
-    public void inNeuenZustandGewechselt(String zustand, boolean akzeptierend) {
-    }
 
     //
     // @Test

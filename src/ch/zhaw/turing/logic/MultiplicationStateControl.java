@@ -30,8 +30,6 @@ public class MultiplicationStateControl extends Observable implements TuringMach
     private final ReadWriteHead firstRSH;
     private final ReadWriteHead secondRSH;
 
-    private final ZustandsUebergansListener listener;
-
     /**
      * Erstellt eine neue Zustandssteuerung für die Multiplikation und
      * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
@@ -43,11 +41,9 @@ public class MultiplicationStateControl extends Observable implements TuringMach
      * @param multiplikant
      *            rechte Zahl der Multiplikation.
      */
-    public MultiplicationStateControl(int multiplikator, int multiplikant, ZustandsUebergansListener listener) {
+    public MultiplicationStateControl(int multiplikator, int multiplikant) {
         this.firstRSH = new ReadWriteHead();
         this.secondRSH = new ReadWriteHead();
-
-        this.listener = listener;
 
         setUpTape(multiplikator, multiplikant);
     }
@@ -65,26 +61,21 @@ public class MultiplicationStateControl extends Observable implements TuringMach
      *            der zweite Lese-Schreibkopf der Maschine
      * 
      */
-    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH, int nuberOfSteps,
-            ZustandsUebergansListener listener) {
+    public MultiplicationStateControl(ReadWriteHead firstRSH, ReadWriteHead secondRSH, int nuberOfSteps) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
         this.nuberOfSteps = nuberOfSteps;
         
         curState = MultiplicationStateControl.Q0;
-        
-        this.listener = listener;
     }
 
     public MultiplicationStateControl(int multiplikator, int multiplikant, ReadWriteHead firstRSH,
-            ReadWriteHead secondRSH, ZustandsUebergansListener listener) {
+            ReadWriteHead secondRSH) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
         setUpTape(multiplikator, multiplikant);
-
-        this.listener = listener;
     }
 
     /**
@@ -140,7 +131,8 @@ public class MultiplicationStateControl extends Observable implements TuringMach
 
      @Override
     public void doStep() {
-
+         String startState = curState;
+         
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
@@ -172,7 +164,10 @@ public class MultiplicationStateControl extends Observable implements TuringMach
             throw new IllegalStateException(curState + " existiert nicht");
         }
 
-        this.listener.inNeuenZustandGewechselt(curState, acceptedState());
+        if (!startState.equals(curState)) {
+            setChanged();
+            notifyObservers();
+        }
     }
 
     private String handleQ10(char fstTapeChar, char sndTapeChar) {
