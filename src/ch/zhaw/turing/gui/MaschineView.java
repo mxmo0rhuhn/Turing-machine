@@ -275,6 +275,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             DiagrammView v = new DiagrammView();
             v.update(machine, null);
             machine.addObserver(v);
+            
+            
+            stepsLabel.setText("  Schritte: " + machine.getNumberOfSteps());
         }
     }
 
