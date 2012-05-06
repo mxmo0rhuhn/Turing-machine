@@ -28,7 +28,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
     private static final long serialVersionUID = 603352769158705835L;
 
     private static final int minDelay = System.getProperty("minDelay") != null ? Integer.parseInt(System
-            .getProperty("minDelay")) : 1;
+            .getProperty("minDelay")) : 0;
     private static volatile int timeout = 200; // timeout für automatisches rechnen
 
     private static boolean debug = false;
@@ -212,7 +212,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame f = new JFrame("Timeout in Millisekunden");
-                JSlider slider = new JSlider(SwingConstants.HORIZONTAL, minDelay, 2000, 1000);
+                JSlider slider = new JSlider(SwingConstants.HORIZONTAL, minDelay, 2000, timeout);
                 slider.addChangeListener(MaschineView.this);
                 slider.setMajorTickSpacing(200);
                 slider.setMinorTickSpacing(50);
