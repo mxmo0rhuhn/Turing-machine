@@ -2,7 +2,6 @@ package ch.zhaw.turing.gui;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Observable;
@@ -20,7 +19,7 @@ public class DiagrammView extends JFrame implements Observer {
 
     private static final long serialVersionUID = 4980417373952490906L;
 
-    private static final String DIR_SEP = File.separator;
+    private static final String DIR_SEP = "/"; // windows jar-separator ist auch forward slash. yay
 
     private static final String FULL_JAR_FILENAME_MULIPLICATION = String.format(
             "%sZeichnungen%sMultiplikation%sZustaende%s%s hervorgehoben.png", DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, "%s");
