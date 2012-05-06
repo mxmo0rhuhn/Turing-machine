@@ -18,6 +18,8 @@ public class FactorialStateControl extends TuringMachine {
     public static final String Q6 = "Q6";
     public static final String Q7 = "Q7";
     public static final String Q8 = "Q8";
+    
+    public static final String MULTIPLICATION = "MULTIPLICATION";
 
     private int nuberOfSteps;
 
@@ -27,6 +29,8 @@ public class FactorialStateControl extends TuringMachine {
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
     private ReadWriteHead thirdRSH;
+    
+    private TuringMachine multiplikation;
 
     /**
      * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und
@@ -90,6 +94,16 @@ public class FactorialStateControl extends TuringMachine {
 
     @Override
     public void doStep() {
+        
+        if (multiplikation != null) {
+            multiplikation.doStep();
+            nuberOfSteps++;
+            if (multiplikation.acceptedState()) {
+                multiplikation = null; // das nächste mal wollen wir wieder fakultät rechnen
+            }
+            return;
+        }
+        
         String startState = curState;
 
         char fstTapeChar = firstRSH.read().charValue();
@@ -118,6 +132,8 @@ public class FactorialStateControl extends TuringMachine {
             curState = handleQ7(fstTapeChar, sndTapeChar);
         } else if (curState == FactorialStateControl.Q8) {
             curState = handleQ8(fstTapeChar, sndTapeChar);
+        } else if (curState == FactorialStateControl.MULTIPLICATION) {
+            curState = handleBackFromMultiplication(fstTapeChar, sndTapeChar);
         } else {
             throw new IllegalStateException(curState + " existiert nicht!");
         }
@@ -125,6 +141,18 @@ public class FactorialStateControl extends TuringMachine {
         if (!startState.equals(curState)) {
             setChanged();
             notifyObservers();
+        }
+    }
+
+    private String handleBackFromMultiplication(char fstTapeChar, char sndTapeChar) {
+        if (firstRSH.read().charValue() == ZERO_CHAR) {
+            firstRSH.write(EMPTY_VALUE);
+            firstRSH.moveRight();
+
+            return FactorialStateControl.Q5;
+        } else {
+            dumpTape1Exeption(FactorialStateControl.Q4, fstTapeChar);
+            return null;
         }
     }
 
@@ -220,20 +248,8 @@ public class FactorialStateControl extends TuringMachine {
             // Auf erstes Zeichen stellen
             secondRSH.moveRight();
 
-            MultiplicationStateControl myMultiplicationStateControl = new MultiplicationStateControl(secondRSH,
-                    thirdRSH, nuberOfSteps);
-            myMultiplicationStateControl.doAllSteps();
-            nuberOfSteps = myMultiplicationStateControl.getNumberOfSteps();
-
-            if (firstRSH.read().charValue() == ZERO_CHAR) {
-                firstRSH.write(EMPTY_VALUE);
-                firstRSH.moveRight();
-
-                return FactorialStateControl.Q5;
-            } else {
-                dumpTape1Exeption(FactorialStateControl.Q4, fstTapeChar);
-                return null;
-            }
+            multiplikation = new MultiplicationStateControl(secondRSH, thirdRSH, nuberOfSteps);
+            return MULTIPLICATION;
         } else {
             dumpTape2Exeption(FactorialStateControl.Q4, sndTapeChar);
             return null;
