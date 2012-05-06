@@ -29,7 +29,7 @@ public class MaschineView extends JFrame implements ActionListener, ZustandsUebe
     private static final long serialVersionUID = 603352769158705835L;
 
     private static final int minDelay = System.getProperty("minDelay") != null ? Integer.parseInt(System
-            .getProperty("minDelay")) : 200;
+            .getProperty("minDelay")) : 1;
     private static volatile int timeout = 200; // timeout für automatisches rechnen
 
     private static boolean debug = false;
