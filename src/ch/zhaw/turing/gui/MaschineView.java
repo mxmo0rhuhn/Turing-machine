@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -123,7 +122,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
         panel.add(stop);
         return panel;
     }
-    
+
     private void calcAutomatichWithTimeout() {
         new Thread(new Runnable() {
 
@@ -131,7 +130,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             public void run() {
                 while (automatic && !machine.acceptedState()) {
                     machine.doStep();
-                    
+
                     if (machine.acceptedState()) {
                         showResult();
                     } else {
@@ -142,10 +141,10 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
                             Thread.interrupted();
                         }
                     }
-                    
+
                 }
             }
-            
+
         }).start();
     }
 
@@ -169,9 +168,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
         secondRWHPanel.setRWH(secondRWH);
         thirdRWHPanel.setRWH(thirdRWH);
 
-        firstRWH.addObserver((Observer) firstRWHPanel);
-        secondRWH.addObserver((Observer) secondRWHPanel);
-        thirdRWH.addObserver((Observer) thirdRWHPanel);
+        firstRWH.addObserver(firstRWHPanel);
+        secondRWH.addObserver(secondRWHPanel);
+        thirdRWH.addObserver(thirdRWHPanel);
 
         centerJPanel.add(firstRWHPanel);
         centerJPanel.add(secondRWHPanel);
@@ -256,8 +255,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             thirdRWH.clear();
 
             this.infoLabel.setText(String.format("Rechne: %s mal %s", zahl1, zahl2));
-            return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), firstRWH,
-                    secondRWH);
+            return new MultiplicationStateControl(Integer.parseInt(zahl1), Integer.parseInt(zahl2), firstRWH, secondRWH);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Fehler: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
             return null;
@@ -271,6 +269,9 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             machine = multipliziere();
         } else if (FAKULTAET_MENU_EINTRAG.equals(menuItem.getText())) {
             machine = fakultaet();
+        }
+        if (machine != null) {
+            machine.addObserver(new DiagrammView());
         }
     }
 

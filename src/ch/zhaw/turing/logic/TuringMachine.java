@@ -1,5 +1,7 @@
 package ch.zhaw.turing.logic;
 
+import java.util.Observer;
+
 
 public interface TuringMachine {
     
@@ -8,4 +10,8 @@ public interface TuringMachine {
     public boolean acceptedState();
     
     public int getNumberOfSteps();
+    
+    public void addObserver(Observer o);
+    
+    public String getCurrentState();
 }
