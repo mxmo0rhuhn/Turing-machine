@@ -28,6 +28,8 @@ import ch.zhaw.turing.logic.ZustandsUebergansListener;
 
 public class MaschineView extends JFrame implements ActionListener, ZustandsUebergansListener, ChangeListener {
 
+    private static final long serialVersionUID = 603352769158705835L;
+    
     private static final int minDelay = System.getProperty("minDelay") != null ? Integer.parseInt(System
             .getProperty("minDelay")) : 200;
     static volatile int timeout = 1;

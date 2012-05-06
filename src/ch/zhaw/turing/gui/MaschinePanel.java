@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import ch.zhaw.turing.logic.ReadWriteHead;

@@ -1,6 +1,5 @@
 package ch.zhaw.turing.gui;
 
-import ch.zhaw.turing.logic.ReadWriteHead;
 
 
 public class TuringMaschineController {
