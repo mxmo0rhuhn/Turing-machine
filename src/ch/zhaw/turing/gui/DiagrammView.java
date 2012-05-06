@@ -17,10 +17,9 @@ public class DiagrammView extends JFrame implements Observer {
 
     private static final String DIR_SEP = File.pathSeparator;
 
-    private static final String MULTIPLICATION_PATTERN = "Multiplikation" + DIR_SEP + "Zustaende" + DIR_SEP
-            + "%s hervorgehoben";
+    private static final String MULTIPLICATION_PATTERN = String.format("Multiplikation%sZustaende%s%s hervorgehoben", DIR_SEP, DIR_SEP);
 
-    private static final String FACTORIAL_PATTERN = "Fakultaet" + DIR_SEP + "Zustaende" + DIR_SEP + "%s hervorgehoben";
+    private static final String FACTORIAL_PATTERN = String.format("Fakultaet%sZustaende%s%s hervorgehoben", DIR_SEP, DIR_SEP);
 
     private final JLabel label = new JLabel();
 
