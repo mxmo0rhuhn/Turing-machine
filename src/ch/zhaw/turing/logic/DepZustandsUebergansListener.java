@@ -5,7 +5,7 @@ package ch.zhaw.turing.logic;
  * @author rethab
  * 
  */
-public interface ZustandsUebergansListener {
+public interface DepZustandsUebergansListener {
 
     /**
      * 
