@@ -1,2 +1,23 @@
+# Java bytecode
+*.class
 
-/bin
+# Eclipse
+.classpath
+.project
+.settings/**
+
+# idea
+*.iml
+*.idea
+
+# VIM
+*.swp
+*~
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Maven
+target/**
