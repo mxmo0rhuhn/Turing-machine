@@ -22,10 +22,14 @@ public class DiagrammView extends JFrame implements Observer {
     private static final String DIR_SEP = "/"; // windows jar-separator ist auch forward slash. yay
 
     private static final String FULL_JAR_FILENAME_MULIPLICATION = String.format(
-            "%sZeichnungen%sMultiplikation%sZustaende%s%s hervorgehoben.png", DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, "%s");
+    //        "%ssrc%smain%sressources%sMultiplikation%sZustaende%s%s hervorgehoben.png", DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, "%s");
+    "Multiplikation%sZustaende%s%s hervorgehoben.png", DIR_SEP, DIR_SEP, "%s");
+    //Multiplikation/Zustaende/q0 hervorgehoben.png
 
     private static final String FULL_JAR_FILENAME_FACTORIAL = String.format(
-            "%sZeichnungen%sFakultaet%sZustaende%s%s.png", DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, "%s");
+    //        "%ssrc%smain%skressourcesultaet%sZustaende%s%s.png", DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, DIR_SEP, "%s");
+    "Fakultaet%sZustaende%s%s.png", DIR_SEP, DIR_SEP, "%s");
+    //Fakultaet/Zustaende/q0.png
 
     private BufferedImage bufImage;
 
@@ -44,6 +48,7 @@ public class DiagrammView extends JFrame implements Observer {
         String zustand = m.getCurrentState().toLowerCase();
 
         String imgName;
+
         if (m instanceof FactorialStateControl) {
             imgName = String.format(FULL_JAR_FILENAME_FACTORIAL, zustand);
         } else if (m instanceof MultiplicationStateControl) {
@@ -52,7 +57,9 @@ public class DiagrammView extends JFrame implements Observer {
             throw new IllegalArgumentException(o.getClass() + " sollte nicht im DiagrammView landen..");
         }
 
-        URL fileUrl = this.getClass().getResource(imgName);
+//        imgName = zustand + ".png";
+
+        URL fileUrl = this.getClass().getClassLoader().getResource(imgName);
         if (fileUrl == null) {
             throw new RuntimeException(imgName + " does not exist");
         }
