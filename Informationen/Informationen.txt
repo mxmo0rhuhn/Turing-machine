@@ -1,23 +1,24 @@
 7! - Mit GUI: 59.54 Min
 
 Mit Observer:
-0!: Ergebnis: 1 	Schritte: 1 		Benötigte Zeit: 0 Sekunden
-1!: Ergebnis: 1 	Schritte: 6 		Benötigte Zeit: 0 Sekunden
-2!: Ergebnis: 2 	Schritte: 44 		Benötigte Zeit: 0 Sekunden
-3!: Ergebnis: 6 	Schritte: 185 		Benötigte Zeit: 0 Sekunden
-4!: Ergebnis: 24 	Schritte: 1'276 	Benötigte Zeit: 0 Sekunden
-5!: Ergebnis: 120 	Schritte: 21'021 	Benötigte Zeit: 0 Sekunden
-6!: Ergebnis: 720 	Schritte: 678'668 	Benötigte Zeit: 0 Sekunden
-7!: Ergebnis: 5040 	Schritte: 32'610'385 	Benötigte Zeit: 4 Sekunden
+0!: Ergebnis: 1 	    Schritte: 1 		        Benötigte Zeit: 0 Sekunden
+1!: Ergebnis: 1 	    Schritte: 6 		        Benötigte Zeit: 0 Sekunden
+2!: Ergebnis: 2 	    Schritte: 44 		        Benötigte Zeit: 0 Sekunden
+3!: Ergebnis: 6 	    Schritte: 185 		      Benötigte Zeit: 0 Sekunden
+4!: Ergebnis: 24 	    Schritte: 1'276 	      Benötigte Zeit: 0 Sekunden
+5!: Ergebnis: 120 	  Schritte: 21'021 	      Benötigte Zeit: 0 Sekunden
+6!: Ergebnis: 720 	  Schritte: 678'668 	    Benötigte Zeit: 0 Sekunden
+7!: Ergebnis: 5040 	  Schritte: 32'610'385 	  Benötigte Zeit: 4 Sekunden
 8!: Ergebnis: 40320 	Schritte: 2'081'079'132 Benötigte Zeit: 291 Sekunden
+
 Ohne Observer:
-0!: Ergebnis: 1 	Schritte: 1 		Benötigte Zeit: 0 Sekunden
-1!: Ergebnis: 1 	Schritte: 6 		Benötigte Zeit: 0 Sekunden
-2!: Ergebnis: 2 	Schritte: 44 		Benötigte Zeit: 0 Sekunden
-3!: Ergebnis: 6 	Schritte: 185 		Benötigte Zeit: 0 Sekunden
-4!: Ergebnis: 24 	Schritte: 1'276 	Benötigte Zeit: 0 Sekunden
-5!: Ergebnis: 120 	Schritte: 21'021 	Benötigte Zeit: 0 Sekunden
-6!: Ergebnis: 720 	Schritte: 678'668 	Benötigte Zeit: 0 Sekunden
-7!: Ergebnis: 5040 	Schritte: 32'610'385 	Benötigte Zeit: 1 Sekunden
+0!: Ergebnis: 1 	    Schritte: 1 		        Benötigte Zeit: 0 Sekunden
+1!: Ergebnis: 1 	    Schritte: 6 		        Benötigte Zeit: 0 Sekunden
+2!: Ergebnis: 2 	    Schritte: 44 		        Benötigte Zeit: 0 Sekunden
+3!: Ergebnis: 6 	    Schritte: 185 		      Benötigte Zeit: 0 Sekunden
+4!: Ergebnis: 24 	    Schritte: 1'276 	      Benötigte Zeit: 0 Sekunden
+5!: Ergebnis: 120 	  Schritte: 21'021 	      Benötigte Zeit: 0 Sekunden
+6!: Ergebnis: 720 	  Schritte: 678'668 	    Benötigte Zeit: 0 Sekunden
+7!: Ergebnis: 5040 	  Schritte: 32'610'385 	  Benötigte Zeit: 1 Sekunden
 8!: Ergebnis: 40320 	Schritte: 2'081'079'132 Benötigte Zeit: 121 Sekunden
 9!: Ergebnis: 362880 	Schritte: 1'002'179'117 Benötigte Zeit: 20645 Sekunden
