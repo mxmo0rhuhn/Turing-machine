@@ -5,7 +5,7 @@ import org.junit.Test;
 
 /**
  * Testcases fuer die Multiplikation
- * 
+ *
  * @author Max Schrimpf
  */
 public class MultiplicationStateControlTest {

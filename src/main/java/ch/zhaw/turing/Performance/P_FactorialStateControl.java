@@ -1,11 +1,6 @@
 package ch.zhaw.turing.Performance;
 
-import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ONE_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.*;
 
 public class P_FactorialStateControl extends P_TuringMachine {
 
@@ -18,7 +13,7 @@ public class P_FactorialStateControl extends P_TuringMachine {
     public static final String Q6 = "Q6";
     public static final String Q7 = "Q7";
     public static final String Q8 = "Q8";
-    
+
     public static final String MULTIPLICATION = "MULTIPLICATION";
 
     private int nuberOfSteps;
@@ -29,16 +24,15 @@ public class P_FactorialStateControl extends P_TuringMachine {
     private P_ReadWriteHead firstRSH;
     private P_ReadWriteHead secondRSH;
     private P_ReadWriteHead thirdRSH;
-    
+
     private P_TuringMachine multiplikation;
-    
+
     /**
      * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und
      * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
      * dem ersten Zeichen der Eingabe.
-     * 
-     * @param number
-     *            die Zahl deren Fakultät berechnet werden soll.
+     *
+     * @param number die Zahl deren Fakultät berechnet werden soll.
      */
     public P_FactorialStateControl(int number) {
         this.firstRSH = new P_ReadWriteHead();
@@ -57,7 +51,6 @@ public class P_FactorialStateControl extends P_TuringMachine {
     }
 
     /**
-     * 
      * @param number
      * @param firstRSH
      */
@@ -94,7 +87,7 @@ public class P_FactorialStateControl extends P_TuringMachine {
 
     @Override
     public void doStep() {
-        
+
         if (multiplikation != null) {
             multiplikation.doStep();
             nuberOfSteps++;
@@ -103,7 +96,7 @@ public class P_FactorialStateControl extends P_TuringMachine {
             }
             return;
         }
-        
+
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 

@@ -1,13 +1,8 @@
 package ch.zhaw.turing.logic;
 
-import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ONE_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
-
 import java.util.Observer;
+
+import static ch.zhaw.turing.logic.ReadWriteHead.*;
 
 public class FactorialStateControl extends TuringMachine {
 
@@ -20,7 +15,7 @@ public class FactorialStateControl extends TuringMachine {
     public static final String Q6 = "Q6";
     public static final String Q7 = "Q7";
     public static final String Q8 = "Q8";
-    
+
     public static final String MULTIPLICATION = "MULTIPLICATION";
 
     private int nuberOfSteps;
@@ -31,18 +26,17 @@ public class FactorialStateControl extends TuringMachine {
     private ReadWriteHead firstRSH;
     private ReadWriteHead secondRSH;
     private ReadWriteHead thirdRSH;
-    
+
     private TuringMachine multiplikation;
-    
+
     private Observer observer;
 
     /**
      * Erstellt eine neue Zustandssteuerung für die Fakultätsberechnung und
      * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
      * dem ersten Zeichen der Eingabe.
-     * 
-     * @param number
-     *            die Zahl deren Fakultät berechnet werden soll.
+     *
+     * @param number die Zahl deren Fakultät berechnet werden soll.
      */
     public FactorialStateControl(int number) {
         this.firstRSH = new ReadWriteHead();
@@ -59,7 +53,7 @@ public class FactorialStateControl extends TuringMachine {
 
         setUpTape(number);
     }
-    
+
     @Override
     public synchronized void addObserver(Observer o) {
         this.observer = o;
@@ -67,7 +61,6 @@ public class FactorialStateControl extends TuringMachine {
     }
 
     /**
-     * 
      * @param number
      * @param firstRSH
      */
@@ -104,7 +97,7 @@ public class FactorialStateControl extends TuringMachine {
 
     @Override
     public void doStep() {
-        
+
         if (multiplikation != null) {
             multiplikation.doStep();
             nuberOfSteps++;
@@ -113,7 +106,7 @@ public class FactorialStateControl extends TuringMachine {
             }
             return;
         }
-        
+
         String startState = curState;
 
         char fstTapeChar = firstRSH.read().charValue();

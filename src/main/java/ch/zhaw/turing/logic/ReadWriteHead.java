@@ -7,11 +7,11 @@ import java.util.Observable;
 
 /**
  * Stellt ein einzelnes Band mit einer Spur und einem Lese-Schreib Kopf dar
- * 
+ *
  * @author Max Schrimpf
  */
-public final class ReadWriteHead extends Observable{
-    
+public final class ReadWriteHead extends Observable {
+
     public enum Direction {
         LEFT, RIGHT, STAY;
     }
@@ -30,7 +30,7 @@ public final class ReadWriteHead extends Observable{
     public static final Character ONE_VALUE = new Character('1');
 
     private Character curChar;
-    
+
     private Direction lastMove = Direction.STAY;
 
     /**
@@ -42,14 +42,14 @@ public final class ReadWriteHead extends Observable{
     }
 
     void moveRight() {
-       Character curChar = this.curChar;
-        
+        Character curChar = this.curChar;
+
         if (curChar.charValue() != EMPTY_CHAR) {
             prefix.push(curChar);
         }
         this.curChar = suffix.pop();
         this.lastMove = Direction.RIGHT;
-        
+
         setChanged();
         notifyObservers();
     }
@@ -68,7 +68,7 @@ public final class ReadWriteHead extends Observable{
 
     void write(Character newCharacter) {
         this.curChar = newCharacter;
-        
+
         setChanged();
         notifyObservers();
     }
@@ -76,12 +76,13 @@ public final class ReadWriteHead extends Observable{
     public Character read() {
 //        setChanged();
 //        notifyObservers();
-        
+
         return this.curChar;
     }
-    
+
     /**
      * Die letzte Bewegung von diesem Lese-Schreib-Kopf
+     *
      * @return
      */
     public Direction getLastMove() {
@@ -90,7 +91,7 @@ public final class ReadWriteHead extends Observable{
 
     /**
      * Gibt den Wert des Feldes prefix zurück
-     * 
+     *
      * @return Der Wert von prefix
      */
     public Character[] getPrefix() {
@@ -99,36 +100,36 @@ public final class ReadWriteHead extends Observable{
 
     /**
      * Gibt den Wert des Feldes suffix zurück
-     * 
+     *
      * @return Der Wert von suffix
      */
     public Character[] getSuffix() {
         return this.suffix.toArray(new Character[0]);
     }
-    
+
     /**
      * Erstellt ein Array mit dem derzeitigen Bandinhalt der Maschine
      *
      * @return der Bandinhalt der Maschine.
      */
-    public Character[] getTapeState(){
-    
+    public Character[] getTapeState() {
+
         Character[] prefix;
         Character[] suffix;
         Character[] resultat = new Character[31];
-    
+
         prefix = Arrays.copyOfRange(this.prefix.toArray(new Character[0]), 0, 15); // take at most 15
-        
+
         List<Character> reverse = Arrays.asList(prefix);
         Collections.reverse(reverse);
         prefix = reverse.toArray(new Character[0]);
 
         suffix = Arrays.copyOfRange(this.suffix.toArray(new Character[0]), 0, 15); // take at most 15
-    
+
         System.arraycopy(prefix, 0, resultat, 15 - prefix.length, prefix.length);
         resultat[15] = curChar;
         System.arraycopy(suffix, 0, resultat, 16, suffix.length);
-       
+
         for (int i = 0; i < resultat.length; i++) {
             if (resultat[i] == null) {
                 resultat[i] = new Character('B');
@@ -138,7 +139,7 @@ public final class ReadWriteHead extends Observable{
     }
 
     /**
-     * Gibt die Erste Zahl auf dem Band aus. 
+     * Gibt die Erste Zahl auf dem Band aus.
      *
      * @return die Erste Zahl auf dem Band.
      */
@@ -158,13 +159,13 @@ public final class ReadWriteHead extends Observable{
         }
         return i;
     }
-    
+
     public void clear() {
         lastMove = Direction.STAY;
         curChar = EMPTY_VALUE;
         prefix = new NeverNeverEnd();
         suffix = new NeverNeverEnd();
-        
+
         setChanged();
         notifyObservers();
     }

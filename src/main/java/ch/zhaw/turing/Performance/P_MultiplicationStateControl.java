@@ -1,11 +1,6 @@
 package ch.zhaw.turing.Performance;
 
-import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.EMPTY_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ONE_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ONE_VALUE;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_CHAR;
-import static ch.zhaw.turing.logic.ReadWriteHead.ZERO_VALUE;
+import static ch.zhaw.turing.logic.ReadWriteHead.*;
 
 public class P_MultiplicationStateControl extends P_TuringMachine {
 
@@ -24,7 +19,7 @@ public class P_MultiplicationStateControl extends P_TuringMachine {
     private String curState;
 
     private int nuberOfSteps;
-    
+
     private final P_ReadWriteHead firstRSH;
     private final P_ReadWriteHead secondRSH;
 
@@ -33,11 +28,9 @@ public class P_MultiplicationStateControl extends P_TuringMachine {
      * initialisiert das Band. Die Position des LS-Kopfes ist danach genau auf
      * dem ersten Zeichen der Eingabe. Die Lese-Schreibeköpfe können mitgegeben
      * erstellt.
-     * 
-     * @param multiplikator
-     *            linke Zahl der Multiplikation.
-     * @param multiplikant
-     *            rechte Zahl der Multiplikation.
+     *
+     * @param multiplikator linke Zahl der Multiplikation.
+     * @param multiplikant  rechte Zahl der Multiplikation.
      */
     public P_MultiplicationStateControl(int multiplikator, int multiplikant) {
         this.firstRSH = new P_ReadWriteHead();
@@ -49,27 +42,24 @@ public class P_MultiplicationStateControl extends P_TuringMachine {
     /**
      * Erstellt eine neue Zustandssteuerung für die Multiplikation die genau die
      * mitgegebenen Bänder nutzt.
-     * 
+     * <p/>
      * Die Position des LS-Kopfes des oberen Bandes muss dazu genau auf dem
      * ersten Zeichen der Eingabe sein. Das Zweite Band muss leer sein.
-     * 
-     * @param firstRSH
-     *            der erste Lese-Schreibkopf der Maschine
-     * @param secondRSH
-     *            der zweite Lese-Schreibkopf der Maschine
-     * 
+     *
+     * @param firstRSH  der erste Lese-Schreibkopf der Maschine
+     * @param secondRSH der zweite Lese-Schreibkopf der Maschine
      */
     public P_MultiplicationStateControl(P_ReadWriteHead firstRSH, P_ReadWriteHead secondRSH, int nuberOfSteps) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
         this.nuberOfSteps = nuberOfSteps;
-        
+
         curState = P_MultiplicationStateControl.Q0;
     }
 
     public P_MultiplicationStateControl(int multiplikator, int multiplikant, P_ReadWriteHead firstRSH,
-            P_ReadWriteHead secondRSH) {
+                                        P_ReadWriteHead secondRSH) {
         this.firstRSH = firstRSH;
         this.secondRSH = secondRSH;
 
@@ -77,7 +67,6 @@ public class P_MultiplicationStateControl extends P_TuringMachine {
     }
 
     /**
-     * 
      * @param multiplikator
      * @param multiplikant
      * @param firstRSH
@@ -127,13 +116,13 @@ public class P_MultiplicationStateControl extends P_TuringMachine {
         return curState == P_MultiplicationStateControl.Q10;
     }
 
-     @Override
+    @Override
     public void doStep() {
         char fstTapeChar = firstRSH.read().charValue();
         char sndTapeChar = secondRSH.read().charValue();
 
         nuberOfSteps++;
-        
+
         if (curState == P_MultiplicationStateControl.Q0) {
             curState = handleQ0(fstTapeChar, sndTapeChar);
         } else if (curState == P_MultiplicationStateControl.Q1) {

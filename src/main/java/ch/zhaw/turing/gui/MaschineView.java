@@ -1,27 +1,16 @@
 package ch.zhaw.turing.gui;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import ch.zhaw.turing.logic.FactorialStateControl;
 import ch.zhaw.turing.logic.MultiplicationStateControl;
 import ch.zhaw.turing.logic.ReadWriteHead;
 import ch.zhaw.turing.logic.TuringMachine;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MaschineView extends JFrame implements ActionListener, ChangeListener {
 
@@ -42,8 +31,8 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
     private final JLabel infoLabel = new JLabel("Der (Turing) Gerät");
     private final JLabel stepsLabel = new JLabel("");
 
-    private final DiagrammView curDiagrammView; 
-    
+    private final DiagrammView curDiagrammView;
+
     private volatile TuringMachine machine;
 
     // 3 Panel die die einzelnen Lese-Schreib Koepfe ueberwachen
@@ -64,7 +53,7 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
         buildFrame();
 
         curDiagrammView = new DiagrammView();
-        
+
         this.setLocation(100, 0);
         this.setVisible(true);
         this.setResizable(false);
@@ -281,8 +270,8 @@ public class MaschineView extends JFrame implements ActionListener, ChangeListen
             curDiagrammView.update(machine, null);
             curDiagrammView.setVisible(true);
             machine.addObserver(curDiagrammView);
-            
-            
+
+
             stepsLabel.setText("  Schritte: " + machine.getNumberOfSteps());
         }
     }

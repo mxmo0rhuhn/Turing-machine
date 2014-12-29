@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 /**
  * Auf eine Turing Maschine optimierte Linked List
- * 
+ *
  * @author rethab
  */
 public class P_NeverNeverEnd extends LinkedList<Character> {

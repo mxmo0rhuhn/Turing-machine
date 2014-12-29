@@ -3,11 +3,11 @@ package ch.zhaw.turing.Performance;
 
 /**
  * Stellt ein einzelnes Band mit einer Spur und einem Lese-Schreib Kopf dar
- * 
+ *
  * @author Max Schrimpf
  */
 public final class P_ReadWriteHead {
-    
+
     public enum Direction {
         LEFT, RIGHT, STAY;
     }
@@ -26,7 +26,7 @@ public final class P_ReadWriteHead {
     public static final Character ONE_VALUE = new Character('1');
 
     private Character curChar;
-    
+
     private Direction lastMove = Direction.STAY;
 
     /**
@@ -38,8 +38,8 @@ public final class P_ReadWriteHead {
     }
 
     void moveRight() {
-       Character curChar = this.curChar;
-        
+        Character curChar = this.curChar;
+
         if (curChar.charValue() != EMPTY_CHAR) {
             prefix.push(curChar);
         }
@@ -63,12 +63,13 @@ public final class P_ReadWriteHead {
     public Character read() {
 //        setChanged();
 //        notifyObservers();
-        
+
         return this.curChar;
     }
-    
+
     /**
      * Die letzte Bewegung von diesem Lese-Schreib-Kopf
+     *
      * @return
      */
     public Direction getLastMove() {
@@ -77,7 +78,7 @@ public final class P_ReadWriteHead {
 
     /**
      * Gibt den Wert des Feldes prefix zurück
-     * 
+     *
      * @return Der Wert von prefix
      */
     public Character[] getPrefix() {
@@ -86,7 +87,7 @@ public final class P_ReadWriteHead {
 
     /**
      * Gibt den Wert des Feldes suffix zurück
-     * 
+     *
      * @return Der Wert von suffix
      */
     public Character[] getSuffix() {
@@ -94,7 +95,7 @@ public final class P_ReadWriteHead {
     }
 
     /**
-     * Gibt die Erste Zahl auf dem Band aus. 
+     * Gibt die Erste Zahl auf dem Band aus.
      *
      * @return die Erste Zahl auf dem Band.
      */
@@ -114,7 +115,7 @@ public final class P_ReadWriteHead {
         }
         return i;
     }
-    
+
     public void clear() {
         lastMove = Direction.STAY;
         curChar = EMPTY_VALUE;

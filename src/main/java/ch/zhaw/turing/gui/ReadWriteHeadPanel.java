@@ -1,13 +1,11 @@
 package ch.zhaw.turing.gui;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import ch.zhaw.turing.logic.ReadWriteHead;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JPanel;
-
-import ch.zhaw.turing.logic.ReadWriteHead;
 
 public class ReadWriteHeadPanel extends JPanel implements Observer {
 
@@ -41,19 +39,19 @@ public class ReadWriteHeadPanel extends JPanel implements Observer {
         int topOffset = ReadWriteHeadPanel.topOffset + elemHeight;
 
         switch (curRWH.getLastMove()) {
-        case LEFT:
-            g.setColor(new Color(255, 165, 0));
-            g.fillRect(16 * leftOffset + 14 * elemWidth + elemWidth/2, topOffset - schreibkopfHeight - 3, elemWidth/2, schreibkopfHeight);
-            break;
-        case RIGHT:
-            g.setColor(new Color(0, 100, 0));
-            g.fillRect(16 * leftOffset + 16 * elemWidth, topOffset - schreibkopfHeight - 3, elemWidth/2, schreibkopfHeight);
-            break;
-        default:
-            g.setColor(new Color(0, 0, 0));
-            break;
+            case LEFT:
+                g.setColor(new Color(255, 165, 0));
+                g.fillRect(16 * leftOffset + 14 * elemWidth + elemWidth / 2, topOffset - schreibkopfHeight - 3, elemWidth / 2, schreibkopfHeight);
+                break;
+            case RIGHT:
+                g.setColor(new Color(0, 100, 0));
+                g.fillRect(16 * leftOffset + 16 * elemWidth, topOffset - schreibkopfHeight - 3, elemWidth / 2, schreibkopfHeight);
+                break;
+            default:
+                g.setColor(new Color(0, 0, 0));
+                break;
         }
-        
+
         // Schreibkopf
         g.fillRect(16 * leftOffset + 15 * elemWidth, topOffset - schreibkopfHeight - 3, elemWidth, schreibkopfHeight);
 
@@ -63,15 +61,15 @@ public class ReadWriteHeadPanel extends JPanel implements Observer {
 
             // System.out.println(curTape[j]);
             switch (getElemAsChar(curTape, j)) {
-            case ReadWriteHead.ONE_CHAR:
-                g.setColor(new Color(25, 25, 112));
-                break;
-            case ReadWriteHead.ZERO_CHAR:
-                g.setColor(new Color(255, 0, 0));
-                break;
-            default:
-                g.setColor(new Color(190, 190, 190));
-                break;
+                case ReadWriteHead.ONE_CHAR:
+                    g.setColor(new Color(25, 25, 112));
+                    break;
+                case ReadWriteHead.ZERO_CHAR:
+                    g.setColor(new Color(255, 0, 0));
+                    break;
+                default:
+                    g.setColor(new Color(190, 190, 190));
+                    break;
             }
 
             g.drawRect(leftOffset, topOffset, elemWidth, elemHeight);
